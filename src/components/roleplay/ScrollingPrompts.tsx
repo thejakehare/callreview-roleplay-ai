@@ -21,11 +21,11 @@ export const ScrollingPrompts = () => {
   }, []);
 
   return (
-    <div className="min-h-[3rem] relative">
+    <div className="min-h-[3rem] relative w-full max-w-2xl mx-auto">
       {prompts.map((prompt, index) => (
         <div
           key={index}
-          className={`absolute w-full transition-all duration-500 ${
+          className={`absolute w-full transition-all duration-500 text-center ${
             index === currentPrompt
               ? "translate-y-0 opacity-100"
               : "-translate-y-8 opacity-0"
