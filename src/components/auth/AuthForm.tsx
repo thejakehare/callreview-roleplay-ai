@@ -66,10 +66,12 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#1a103d]">
-      <Card className="w-[400px] bg-[#251852] border-0">
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <Card className="w-[400px] bg-card border-0">
         <CardHeader>
-          <CardTitle className="text-white">{isLogin ? "Login" : "Register"}</CardTitle>
+          <CardTitle className="text-foreground text-center">
+            {isLogin ? "Login" : "Register"}
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -79,7 +81,7 @@ export const AuthForm = () => {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="bg-[#2f1d66] border-0 text-white placeholder:text-gray-400"
+              className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
             />
             <Input
               type="password"
@@ -87,15 +89,19 @@ export const AuthForm = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="bg-[#2f1d66] border-0 text-white placeholder:text-gray-400"
+              className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
             />
-            <Button type="submit" className="w-full bg-[#6643b5] hover:bg-[#7a52d3]" disabled={loading}>
+            <Button 
+              type="submit" 
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+              disabled={loading}
+            >
               {loading ? "Loading..." : isLogin ? "Login" : "Register"}
             </Button>
             <Button
               type="button"
               variant="link"
-              className="w-full text-[#b69fff]"
+              className="w-full text-primary hover:text-primary/90"
               onClick={() => setIsLogin(!isLogin)}
             >
               {isLogin ? "Need an account? Register" : "Have an account? Login"}
