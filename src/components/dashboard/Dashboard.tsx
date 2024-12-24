@@ -10,8 +10,8 @@ export const Dashboard = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="container mx-auto py-12 px-4 space-y-8">
+    <div className="flex min-h-screen flex-col">
+      <div className="container mx-auto py-12 px-4 space-y-8 flex-grow">
         <div className="grid md:grid-cols-2 gap-8">
           <Card 
             className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0" 
@@ -49,14 +49,14 @@ export const Dashboard = () => {
             <SessionHistory />
           </div>
         )}
-        <div className="flex items-center justify-center gap-2 mt-8">
-          <span className="text-muted-foreground">Powered by</span>
-          <img 
-            src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" 
-            alt="CallReviewAI Logo" 
-            className="h-8"
-          />
-        </div>
+      </div>
+      <div className="flex items-center justify-center gap-2 p-4">
+        <span className="text-muted-foreground">Powered by</span>
+        <img 
+          src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" 
+          alt="CallReviewAI Logo" 
+          className="h-8"
+        />
       </div>
     </div>
   );
