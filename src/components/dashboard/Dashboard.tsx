@@ -10,45 +10,47 @@ export const Dashboard = () => {
   const [showHistory, setShowHistory] = useState(false);
 
   return (
-    <div className="container mx-auto py-8 space-y-8">
-      <h1 className="text-3xl font-bold">Sales Roleplay Dashboard</h1>
-      <div className="grid md:grid-cols-2 gap-6">
-        <Card 
-          className="hover:shadow-lg transition-shadow cursor-pointer" 
-          onClick={() => navigate("/roleplay")}
-        >
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Play className="mr-2" /> New Session
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              Start a new roleplay session with our AI sales coach
-            </p>
-          </CardContent>
-        </Card>
-        <Card 
-          className="hover:shadow-lg transition-shadow cursor-pointer"
-          onClick={() => setShowHistory(!showHistory)}
-        >
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <History className="mr-2" /> Session History
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground">
-              View your past roleplay sessions and track your progress
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-      {showHistory && (
-        <div className="mt-8">
-          <SessionHistory />
+    <div className="min-h-screen bg-background">
+      <div className="container mx-auto py-12 px-4 space-y-8">
+        <h1 className="text-4xl font-bold text-foreground mb-8">Sales Roleplay Dashboard</h1>
+        <div className="grid md:grid-cols-2 gap-8">
+          <Card 
+            className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0" 
+            onClick={() => navigate("/roleplay")}
+          >
+            <CardHeader className="space-y-1">
+              <CardTitle className="flex items-center text-2xl text-primary">
+                <Play className="mr-3 h-6 w-6" /> New Session
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-lg">
+                Start a new roleplay session with our AI sales coach
+              </p>
+            </CardContent>
+          </Card>
+          <Card 
+            className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0"
+            onClick={() => setShowHistory(!showHistory)}
+          >
+            <CardHeader className="space-y-1">
+              <CardTitle className="flex items-center text-2xl text-primary">
+                <History className="mr-3 h-6 w-6" /> Session History
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-lg">
+                View your past roleplay sessions and track your progress
+              </p>
+            </CardContent>
+          </Card>
         </div>
-      )}
+        {showHistory && (
+          <div className="mt-12">
+            <SessionHistory />
+          </div>
+        )}
+      </div>
     </div>
   );
 };

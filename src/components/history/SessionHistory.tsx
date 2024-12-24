@@ -36,46 +36,51 @@ export const SessionHistory = () => {
   }, []);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="text-foreground">Loading...</div>;
   }
 
   return (
-    <Card className="w-full">
+    <Card className="w-full bg-card border-0">
       <CardHeader>
-        <CardTitle>Session History</CardTitle>
+        <CardTitle className="text-2xl text-primary">Session History</CardTitle>
       </CardHeader>
       <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Summary</TableHead>
-              <TableHead>Feedback</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {sessions.map((session) => (
-              <TableRow key={session.id}>
-                <TableCell>
-                  {format(new Date(session.created_at), "PPp")}
-                </TableCell>
-                <TableCell>
-                  {session.duration ? `${session.duration} minutes` : "N/A"}
-                </TableCell>
-                <TableCell>{session.summary || "No summary"}</TableCell>
-                <TableCell>{session.feedback || "No feedback"}</TableCell>
+        <div className="rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow className="border-b border-accent hover:bg-accent/50">
+                <TableHead className="text-primary">Date</TableHead>
+                <TableHead className="text-primary">Duration</TableHead>
+                <TableHead className="text-primary">Summary</TableHead>
+                <TableHead className="text-primary">Feedback</TableHead>
               </TableRow>
-            ))}
-            {sessions.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center">
-                  No sessions found
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {sessions.map((session) => (
+                <TableRow 
+                  key={session.id}
+                  className="border-b border-accent hover:bg-accent/50"
+                >
+                  <TableCell className="text-foreground">
+                    {format(new Date(session.created_at), "PPp")}
+                  </TableCell>
+                  <TableCell className="text-foreground">
+                    {session.duration ? `${session.duration} minutes` : "N/A"}
+                  </TableCell>
+                  <TableCell className="text-foreground">{session.summary || "No summary"}</TableCell>
+                  <TableCell className="text-foreground">{session.feedback || "No feedback"}</TableCell>
+                </TableRow>
+              ))}
+              {sessions.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                    No sessions found
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
