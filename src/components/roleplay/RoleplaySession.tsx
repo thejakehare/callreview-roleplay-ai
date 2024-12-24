@@ -36,14 +36,20 @@ export const RoleplaySession = () => {
       <Button
         size="icon"
         onClick={isActive ? endSession : startSession}
-        className={`h-32 w-32 rounded-full transition-all ${
+        className={`flex h-32 w-32 flex-col items-center justify-center gap-2 rounded-full transition-all ${
           isActive ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
         }`}
       >
         {isActive ? (
-          <MicOff className="h-12 w-12" />
+          <>
+            <MicOff className="h-12 w-12" />
+            <span className="text-xs">End Session</span>
+          </>
         ) : (
-          <Mic className="h-12 w-12" />
+          <>
+            <Mic className="h-12 w-12" />
+            <span className="text-xs">Start Roleplay</span>
+          </>
         )}
       </Button>
     </div>
