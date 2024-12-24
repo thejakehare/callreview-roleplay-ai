@@ -32,26 +32,36 @@ export const RoleplaySession = () => {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <Button
-        size="icon"
-        onClick={isActive ? endSession : startSession}
-        className={`flex h-40 w-40 flex-col items-center justify-center gap-2 rounded-full transition-all animate-pulse ${
-          isActive ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
-        }`}
-      >
-        {isActive ? (
-          <>
-            <MicOff className="h-16 w-16" />
-            <span className="text-sm">End Session</span>
-          </>
-        ) : (
-          <>
-            <Mic className="h-16 w-16" />
-            <span className="text-sm">Start Roleplay</span>
-          </>
-        )}
-      </Button>
+    <div className="flex min-h-screen flex-col">
+      <div className="flex-grow flex items-center justify-center">
+        <Button
+          size="icon"
+          onClick={isActive ? endSession : startSession}
+          className={`flex h-40 w-40 flex-col items-center justify-center gap-2 rounded-full transition-all animate-pulse ${
+            isActive ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
+          }`}
+        >
+          {isActive ? (
+            <>
+              <MicOff className="h-16 w-16" />
+              <span className="text-sm">End Session</span>
+            </>
+          ) : (
+            <>
+              <Mic className="h-16 w-16" />
+              <span className="text-sm">Start Roleplay</span>
+            </>
+          )}
+        </Button>
+      </div>
+      <div className="flex items-center justify-center gap-2 p-4">
+        <span className="text-muted-foreground">Powered by</span>
+        <img 
+          src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" 
+          alt="CallReviewAI Logo" 
+          className="h-8"
+        />
+      </div>
     </div>
   );
 };
