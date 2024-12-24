@@ -14,7 +14,6 @@ export const AuthForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         navigate("/dashboard");
@@ -32,14 +31,18 @@ export const AuthForm = () => {
           email,
           password,
         });
+
         if (error) {
-          if (error.message === "Email not confirmed") {
-            toast.error("Please confirm your email before logging in");
+          if (error.message.includes("Email not confirmed")) {
+            toast.error("Please check your email and confirm your account before logging in");
+          } else if (error.message.includes("Invalid login credentials")) {
+            toast.error("Invalid email or password");
           } else {
             toast.error(error.message);
           }
-          throw error;
+          return;
         }
+
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       } else {
@@ -47,14 +50,16 @@ export const AuthForm = () => {
           email,
           password,
         });
+
         if (error) {
           toast.error(error.message);
-          throw error;
+          return;
         }
+
         toast.success("Registration successful! Please check your email for confirmation.");
       }
-    } catch (error) {
-      console.error("Authentication error:", error);
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
     } finally {
       setLoading(false);
     }
