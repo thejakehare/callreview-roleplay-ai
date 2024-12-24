@@ -52,7 +52,13 @@ export const AuthForm = () => {
         });
 
         if (error) {
-          toast.error(error.message);
+          // Check for user already exists error
+          if (error.message.includes("User already registered")) {
+            toast.error("An account with this email already exists. Please try logging in instead.");
+            setIsLogin(true); // Switch to login mode
+          } else {
+            toast.error(error.message);
+          }
           return;
         }
 
