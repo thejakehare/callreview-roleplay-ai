@@ -66,49 +66,55 @@ export const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <Card className="w-[400px] bg-card border-0">
-        <CardHeader>
-          <CardTitle className="text-foreground text-center">
-            {isLogin ? "Login" : "Register"}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input
-              type="email"
-              placeholder="Email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
-            />
-            <Input
-              type="password"
-              placeholder="Password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
-            />
-            <Button 
-              type="submit" 
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
-              disabled={loading}
-            >
-              {loading ? "Loading..." : isLogin ? "Login" : "Register"}
-            </Button>
-            <Button
-              type="button"
-              variant="link"
-              className="w-full text-primary hover:text-primary/90"
-              onClick={() => setIsLogin(!isLogin)}
-            >
-              {isLogin ? "Need an account? Register" : "Have an account? Login"}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
+    <div className="min-h-screen flex flex-col items-center justify-between bg-background">
+      <div className="flex-1 flex items-center justify-center w-full">
+        <Card className="w-[400px] bg-card border-0">
+          <CardHeader>
+            <CardTitle className="text-foreground text-center">
+              {isLogin ? "Login" : "Register"}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <Input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
+              />
+              <Input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
+              />
+              <Button 
+                type="submit" 
+                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
+                disabled={loading}
+              >
+                {loading ? "Loading..." : isLogin ? "Login" : "Register"}
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                className="w-full text-primary hover:text-primary/90"
+                onClick={() => setIsLogin(!isLogin)}
+              >
+                {isLogin ? "Need an account? Register" : "Have an account? Login"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+      <footer className="w-full py-6 px-4 flex items-center justify-center space-x-2 text-muted">
+        <span>Powered by</span>
+        <img src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" alt="Logo" className="h-6" />
+      </footer>
     </div>
   );
 };
