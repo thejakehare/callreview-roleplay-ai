@@ -11,7 +11,7 @@ export const RoleplaySession = () => {
   const startSession = async () => {
     try {
       await conversation.startSession({
-        agentId: "YOUR_AGENT_ID", // Replace with your agent ID
+        agentId: "XTS4FbykwXxtp9z1Ex9r",
       });
       setIsActive(true);
     } catch (error) {
