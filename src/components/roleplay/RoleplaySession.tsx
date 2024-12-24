@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
+import { ScrollingPrompts } from "./ScrollingPrompts";
 
 export const RoleplaySession = () => {
   const [isActive, setIsActive] = useState(false);
@@ -33,7 +34,7 @@ export const RoleplaySession = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex-grow flex items-center justify-center">
+      <div className="flex-grow flex flex-col items-center justify-center">
         <Button
           size="icon"
           onClick={isActive ? endSession : startSession}
@@ -53,6 +54,7 @@ export const RoleplaySession = () => {
             </>
           )}
         </Button>
+        {!isActive && <ScrollingPrompts />}
       </div>
       <div className="flex items-center justify-center gap-2 p-4">
         <span className="text-muted-foreground">Powered by</span>
