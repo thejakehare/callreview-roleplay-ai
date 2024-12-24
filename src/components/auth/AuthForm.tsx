@@ -7,7 +7,7 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 
 export const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
