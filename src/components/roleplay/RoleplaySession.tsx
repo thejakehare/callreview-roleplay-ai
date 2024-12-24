@@ -34,7 +34,7 @@ export const RoleplaySession = () => {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <div className="flex-grow flex flex-col items-center justify-center">
+      <div className="flex-grow flex flex-col items-center justify-center space-y-8">
         <Button
           size="icon"
           onClick={isActive ? endSession : startSession}
