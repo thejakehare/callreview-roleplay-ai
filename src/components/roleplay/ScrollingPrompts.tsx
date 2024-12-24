@@ -27,7 +27,7 @@ export const ScrollingPrompts = () => {
           key={index}
           className={`absolute w-full transition-all duration-500 text-center ${
             index === currentPrompt
-              ? "translate-y-0 opacity-100"
+              ? "translate-y-0 opacity-70"
               : "-translate-y-8 opacity-0"
           }`}
         >
