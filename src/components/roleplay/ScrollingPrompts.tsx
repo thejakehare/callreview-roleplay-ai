@@ -21,7 +21,7 @@ export const ScrollingPrompts = () => {
   }, []);
 
   return (
-    <div className="h-12 overflow-hidden relative">
+    <div className="min-h-[3rem] relative">
       {prompts.map((prompt, index) => (
         <div
           key={index}
