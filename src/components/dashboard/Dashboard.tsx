@@ -2,15 +2,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Play, History } from "lucide-react";
+import { SessionHistory } from "@/components/history/SessionHistory";
+import { useState } from "react";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
+  const [showHistory, setShowHistory] = useState(false);
 
   return (
     <div className="container mx-auto py-8 space-y-8">
       <h1 className="text-3xl font-bold">Sales Roleplay Dashboard</h1>
       <div className="grid md:grid-cols-2 gap-6">
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => navigate("/roleplay")}>
+        <Card 
+          className="hover:shadow-lg transition-shadow cursor-pointer" 
+          onClick={() => navigate("/roleplay")}
+        >
           <CardHeader>
             <CardTitle className="flex items-center">
               <Play className="mr-2" /> New Session
@@ -22,7 +28,10 @@ export const Dashboard = () => {
             </p>
           </CardContent>
         </Card>
-        <Card className="hover:shadow-lg transition-shadow cursor-pointer">
+        <Card 
+          className="hover:shadow-lg transition-shadow cursor-pointer"
+          onClick={() => setShowHistory(!showHistory)}
+        >
           <CardHeader>
             <CardTitle className="flex items-center">
               <History className="mr-2" /> Session History
@@ -35,6 +44,11 @@ export const Dashboard = () => {
           </CardContent>
         </Card>
       </div>
+      {showHistory && (
+        <div className="mt-8">
+          <SessionHistory />
+        </div>
+      )}
     </div>
   );
 };
