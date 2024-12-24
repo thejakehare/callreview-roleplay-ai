@@ -21,7 +21,7 @@ export const ScrollingPrompts = () => {
   }, []);
 
   return (
-    <div className="h-8 overflow-hidden relative">
+    <div className="h-12 overflow-hidden relative">
       {prompts.map((prompt, index) => (
         <div
           key={index}
@@ -31,7 +31,7 @@ export const ScrollingPrompts = () => {
               : "-translate-y-8 opacity-0"
           }`}
         >
-          <p className="text-white text-lg">{prompt}</p>
+          <p className="text-white text-xl font-medium">{prompt}</p>
         </div>
       ))}
     </div>
