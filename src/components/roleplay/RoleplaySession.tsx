@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 
@@ -33,38 +32,20 @@ export const RoleplaySession = () => {
   }, []);
 
   return (
-    <Card className="w-full max-w-3xl">
-      <CardHeader>
-        <CardTitle>Sales Roleplay Session</CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex justify-center">
-          <Button
-            size="lg"
-            onClick={isActive ? endSession : startSession}
-            className={`${
-              isActive ? "bg-red-500 hover:bg-red-600" : "bg-primary"
-            } transition-colors`}
-          >
-            {isActive ? (
-              <>
-                <MicOff className="mr-2" /> End Session
-              </>
-            ) : (
-              <>
-                <Mic className="mr-2" /> Start Session
-              </>
-            )}
-          </Button>
-        </div>
-        {isActive && (
-          <div className="text-center text-sm text-muted-foreground">
-            {conversation.isSpeaking
-              ? "AI is speaking..."
-              : "Listening for your response..."}
-          </div>
+    <div className="flex min-h-screen items-center justify-center">
+      <Button
+        size="icon"
+        onClick={isActive ? endSession : startSession}
+        className={`h-32 w-32 rounded-full transition-all ${
+          isActive ? "bg-red-500 hover:bg-red-600" : "bg-primary hover:bg-primary/90"
+        }`}
+      >
+        {isActive ? (
+          <MicOff className="h-12 w-12" />
+        ) : (
+          <Mic className="h-12 w-12" />
         )}
-      </CardContent>
-    </Card>
+      </Button>
+    </div>
   );
 };
