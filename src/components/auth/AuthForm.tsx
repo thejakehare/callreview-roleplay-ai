@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -11,6 +12,15 @@ export const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already logged in
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        navigate("/dashboard");
+      }
+    });
+  }, [navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,15 +32,27 @@ export const AuthForm = () => {
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          if (error.message === "Email not confirmed") {
+            toast.error("Please confirm your email before logging in");
+          } else {
+            toast.error(error.message);
+          }
+          throw error;
+        }
+        toast.success("Successfully logged in!");
+        navigate("/dashboard");
       } else {
         const { error } = await supabase.auth.signUp({
           email,
           password,
         });
-        if (error) throw error;
+        if (error) {
+          toast.error(error.message);
+          throw error;
+        }
+        toast.success("Registration successful! Please check your email for confirmation.");
       }
-      navigate("/dashboard");
     } catch (error) {
       console.error("Authentication error:", error);
     } finally {
@@ -39,39 +61,43 @@ export const AuthForm = () => {
   };
 
   return (
-    <Card className="w-[400px]">
-      <CardHeader>
-        <CardTitle>{isLogin ? "Login" : "Register"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <Input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Loading..." : isLogin ? "Login" : "Register"}
-          </Button>
-          <Button
-            type="button"
-            variant="link"
-            className="w-full"
-            onClick={() => setIsLogin(!isLogin)}
-          >
-            {isLogin ? "Need an account? Register" : "Have an account? Login"}
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
+    <div className="min-h-screen flex items-center justify-center bg-[#1a103d]">
+      <Card className="w-[400px] bg-[#251852] border-0">
+        <CardHeader>
+          <CardTitle className="text-white">{isLogin ? "Login" : "Register"}</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="bg-[#2f1d66] border-0 text-white placeholder:text-gray-400"
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              className="bg-[#2f1d66] border-0 text-white placeholder:text-gray-400"
+            />
+            <Button type="submit" className="w-full bg-[#6643b5] hover:bg-[#7a52d3]" disabled={loading}>
+              {loading ? "Loading..." : isLogin ? "Login" : "Register"}
+            </Button>
+            <Button
+              type="button"
+              variant="link"
+              className="w-full text-[#b69fff]"
+              onClick={() => setIsLogin(!isLogin)}
+            >
+              {isLogin ? "Need an account? Register" : "Have an account? Login"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
