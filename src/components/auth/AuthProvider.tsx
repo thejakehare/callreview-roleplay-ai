@@ -29,16 +29,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const handleInvalidSession = async () => {
     try {
       await supabase.auth.signOut();
-      setSession(null);
-      setOnboardingCompleted(null);
-      navigate("/");
-      toast.error("Your session has expired. Please log in again.");
     } catch (error) {
-      console.error("Error handling invalid session:", error);
-      // Still clear the session state and redirect even if signOut fails
+      console.error("Error signing out:", error);
+    } finally {
+      // Always clear the session state and redirect
       setSession(null);
       setOnboardingCompleted(null);
-      navigate("/");
+      navigate("/auth");
+      toast.error("Your session has expired. Please log in again.");
     }
   };
 
@@ -52,7 +50,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
       if (error) {
         if (error.code === 'PGRST116') {
-          // Handle invalid session
           await handleInvalidSession();
           return;
         }
@@ -70,25 +67,39 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session }, error }) => {
-      if (error) {
-        handleInvalidSession();
-        return;
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Error getting session:", error);
+          await handleInvalidSession();
+          return;
+        }
+
+        setSession(session);
+        if (session?.user) {
+          await checkOnboardingStatus(session.user.id);
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        await handleInvalidSession();
+      } finally {
+        setLoading(false);
       }
-      setSession(session);
-      if (session) {
-        checkOnboardingStatus(session.user.id);
-      }
-      setLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
-      if (session) {
-        checkOnboardingStatus(session.user.id);
+      if (session?.user) {
+        await checkOnboardingStatus(session.user.id);
+      } else {
+        setOnboardingCompleted(null);
       }
     });
 
