@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116' || error.status === 403) {
+        if (error.code === 'PGRST116') {
           // Handle invalid session
           await handleInvalidSession();
           return;
