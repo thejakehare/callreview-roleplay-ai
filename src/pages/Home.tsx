@@ -22,7 +22,7 @@ const Home = () => {
       />
       
       {/* Main content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-12">
         {/* Logo GIF */}
         <img 
           src={publicUrl}
