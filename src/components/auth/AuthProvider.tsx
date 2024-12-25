@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { Session } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface AuthContextType {
   session: Session | null;
@@ -23,6 +24,23 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [onboardingCompleted, setOnboardingCompleted] = useState<boolean | null>(null);
+  const navigate = useNavigate();
+
+  const handleInvalidSession = async () => {
+    try {
+      await supabase.auth.signOut();
+      setSession(null);
+      setOnboardingCompleted(null);
+      navigate("/");
+      toast.error("Your session has expired. Please log in again.");
+    } catch (error) {
+      console.error("Error handling invalid session:", error);
+      // Still clear the session state and redirect even if signOut fails
+      setSession(null);
+      setOnboardingCompleted(null);
+      navigate("/");
+    }
+  };
 
   const checkOnboardingStatus = async (userId: string) => {
     try {
@@ -33,6 +51,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         .maybeSingle();
 
       if (error) {
+        if (error.code === 'PGRST116' || error.status === 403) {
+          // Handle invalid session
+          await handleInvalidSession();
+          return;
+        }
         console.error('Error checking onboarding status:', error);
         toast.error('Error checking onboarding status');
         return;
@@ -47,7 +70,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        handleInvalidSession();
+        return;
+      }
       setSession(session);
       if (session) {
         checkOnboardingStatus(session.user.id);
@@ -58,7 +85,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setSession(session);
       if (session) {
         checkOnboardingStatus(session.user.id);
@@ -76,7 +103,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           table: 'profiles',
           filter: session ? `id=eq.${session.user.id}` : undefined,
         },
-        (payload) => {
+        async (payload) => {
           if (payload.new && typeof payload.new.onboarding_completed === 'boolean') {
             setOnboardingCompleted(payload.new.onboarding_completed);
           }
@@ -88,7 +115,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       subscription.unsubscribe();
       profileSubscription.unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   return (
     <AuthContext.Provider value={{ session, loading, onboardingCompleted }}>
