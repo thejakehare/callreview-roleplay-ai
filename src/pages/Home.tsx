@@ -1,8 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
+
+  // Get public URL for the GIF
+  const { data: { publicUrl } } = supabase
+    .storage
+    .from('logos')
+    .getPublicUrl('your-gif-filename.gif'); // Replace 'your-gif-filename.gif' with the actual filename
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between relative overflow-hidden">
@@ -16,6 +23,13 @@ const Home = () => {
       
       {/* Main content */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        {/* Logo GIF */}
+        <img 
+          src={publicUrl}
+          alt="Logo Animation"
+          className="w-auto max-w-[400px] mx-auto mb-8"
+        />
+
         {/* Badge */}
         <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/50 text-purple-200 mb-8">
           For high ticket sales reps & teams
