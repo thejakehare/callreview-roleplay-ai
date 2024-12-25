@@ -11,6 +11,7 @@ import { Header } from "./components/layout/Header";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Session } from "@supabase/supabase-js";
+import { toast } from "sonner";
 
 const queryClient = new QueryClient();
 
@@ -43,14 +44,24 @@ const App = () => {
   }, []);
 
   const checkOnboardingStatus = async (userId: string) => {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('onboarding_completed')
-      .eq('id', userId)
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', userId)
+        .maybeSingle();
 
-    if (!error && data) {
-      setOnboardingCompleted(data.onboarding_completed);
+      if (error) {
+        console.error('Error checking onboarding status:', error);
+        toast.error('Error checking onboarding status');
+        return;
+      }
+
+      // If no profile exists or onboarding is not completed, set to false
+      setOnboardingCompleted(data?.onboarding_completed ?? false);
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('An error occurred while checking onboarding status');
     }
   };
 
