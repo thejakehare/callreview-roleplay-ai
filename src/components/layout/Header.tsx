@@ -34,10 +34,6 @@ export const Header = () => {
     }
   };
 
-  const isActive = (path: string) => {
-    return location.pathname === path;
-  };
-
   useEffect(() => {
     const getProfile = async () => {
       if (!session?.user.id) {
@@ -75,14 +71,6 @@ export const Header = () => {
   return (
     <header className="bg-background">
       <div className="container mx-auto px-4 h-16 flex items-center justify-end gap-4">
-        <Button 
-          variant="ghost" 
-          onClick={() => navigate("/dashboard")}
-          className={isActive("/dashboard") ? "text-primary hover:text-primary/90" : "text-white hover:text-white/90"}
-        >
-          Dashboard
-        </Button>
-        
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -106,6 +94,12 @@ export const Header = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48 bg-popover border-border">
+            <DropdownMenuItem 
+              onClick={() => navigate("/dashboard")}
+              className="cursor-pointer"
+            >
+              Dashboard
+            </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={() => navigate("/profile")}
               className="cursor-pointer"
