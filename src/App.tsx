@@ -40,7 +40,30 @@ const App = () => {
       }
     });
 
-    return () => subscription.unsubscribe();
+    // Subscribe to realtime changes on profiles table
+    const profileSubscription = supabase
+      .channel('profiles-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'profiles',
+          filter: session ? `id=eq.${session.user.id}` : undefined,
+        },
+        (payload) => {
+          // Update onboarding status when profile is updated
+          if (payload.new && typeof payload.new.onboarding_completed === 'boolean') {
+            setOnboardingCompleted(payload.new.onboarding_completed);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+      profileSubscription.unsubscribe();
+    };
   }, []);
 
   const checkOnboardingStatus = async (userId: string) => {
