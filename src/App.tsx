@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard/Dashboard";
 import { RoleplaySession } from "@/components/roleplay/RoleplaySession";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
+import Home from "@/pages/Home";
 import { Header } from "@/components/layout/Header";
 
 const App = () => {
@@ -14,8 +15,9 @@ const App = () => {
     <>
       {session && <Header />}
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route
-          path="/"
+          path="/auth"
           element={
             session ? (
               <Navigate to="/dashboard" replace />
@@ -48,17 +50,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        {/* Catch all route - redirect to dashboard or home */}
-        <Route
-          path="*"
-          element={
-            session ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <Navigate to="/" replace />
-            )
-          }
-        />
+        {/* Catch all route - redirect to home */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );
