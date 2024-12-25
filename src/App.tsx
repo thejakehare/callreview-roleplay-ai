@@ -11,56 +11,56 @@ const App = () => {
   const { session } = useAuth();
 
   return (
-    <Routes>
-      <Route
-        path="/"
-        element={
-          session ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <AuthForm />
-          )
-        }
-      />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Header />
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/roleplay"
-        element={
-          <ProtectedRoute>
-            <Header />
-            <RoleplaySession />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <Header />
-            <Profile />
-          </ProtectedRoute>
-        }
-      />
-      {/* Catch all route - redirect to dashboard or home */}
-      <Route
-        path="*"
-        element={
-          session ? (
-            <Navigate to="/dashboard" replace />
-          ) : (
-            <Navigate to="/" replace />
-          )
-        }
-      />
-    </Routes>
+    <>
+      {session && <Header />}
+      <Routes>
+        <Route
+          path="/"
+          element={
+            session ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <AuthForm />
+            )
+          }
+        />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/roleplay"
+          element={
+            <ProtectedRoute>
+              <RoleplaySession />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+        {/* Catch all route - redirect to dashboard or home */}
+        <Route
+          path="*"
+          element={
+            session ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/" replace />
+            )
+          }
+        />
+      </Routes>
+    </>
   );
 };
 
