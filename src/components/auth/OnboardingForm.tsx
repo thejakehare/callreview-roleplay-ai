@@ -116,11 +116,11 @@ export const OnboardingForm = () => {
                 <SelectTrigger className="bg-secondary border-0 text-foreground">
                   <SelectValue placeholder="Select your role" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="sales_rep">Sales Rep</SelectItem>
-                  <SelectItem value="sales_manager">Sales Manager</SelectItem>
-                  <SelectItem value="founder_ceo">Founder/CEO</SelectItem>
-                  <SelectItem value="other">Other</SelectItem>
+                <SelectContent className="bg-[#222222] border-0">
+                  <SelectItem value="sales_rep" className="focus:bg-[#333333] cursor-pointer">Sales Rep</SelectItem>
+                  <SelectItem value="sales_manager" className="focus:bg-[#333333] cursor-pointer">Sales Manager</SelectItem>
+                  <SelectItem value="founder_ceo" className="focus:bg-[#333333] cursor-pointer">Founder/CEO</SelectItem>
+                  <SelectItem value="other" className="focus:bg-[#333333] cursor-pointer">Other</SelectItem>
                 </SelectContent>
               </Select>
             </div>
