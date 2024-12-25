@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Power } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-between relative overflow-hidden">
       {/* Purple gradient background effect */}
       <div 
         className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]" 
@@ -36,14 +37,14 @@ const Home = () => {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/auth")}
             size="lg"
             className="text-lg px-8 py-6"
           >
             Create your free account
           </Button>
           <Button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/auth")}
             variant="secondary"
             size="lg"
             className="text-lg px-8 py-6"
@@ -68,6 +69,14 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="relative z-10 w-full border-t border-border/40 py-4 px-8 mt-16">
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <span>Powered by</span>
+          <Power className="h-4 w-4" />
+        </div>
+      </footer>
     </div>
   );
 };
