@@ -18,19 +18,19 @@ const Home = () => {
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Badge */}
         <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/50 text-purple-200 mb-8">
-          #1 Ranked Voice AI Platform
+          For high ticket sales reps & teams
         </div>
 
         {/* Hero Text */}
         <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6">
-          Master Your Voice
+          Get your own personal
           <br />
-          <span className="text-primary">with AI Practice</span>
+          <span className="text-primary">sales roleplay partner</span>
         </h1>
 
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
-          Supercharge your voice training with our AI tools - Practice sessions, 
-          Real-time feedback, and Performance analytics. Level up your speaking skills easily.
+          The best way to improve your sales skills is through practice and repetition. 
+          Now you can practice anytime, anywhere with the help of AI.
         </p>
 
         {/* CTA Buttons */}
