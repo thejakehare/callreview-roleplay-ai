@@ -9,7 +9,7 @@ const Home = () => {
   const { data: { publicUrl } } = supabase
     .storage
     .from('logos')
-    .getPublicUrl('your-gif-filename.gif'); // Replace 'your-gif-filename.gif' with the actual filename
+    .getPublicUrl('call-review-ai-animated.gif');
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between relative overflow-hidden">
