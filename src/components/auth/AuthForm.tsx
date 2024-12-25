@@ -16,10 +16,15 @@ export const AuthForm = () => {
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
-        navigate("/dashboard");
+        // For new registrations, redirect to onboarding
+        if (!isLogin) {
+          navigate("/onboarding");
+        } else {
+          navigate("/dashboard");
+        }
       }
     });
-  }, [navigate]);
+  }, [navigate, isLogin]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
