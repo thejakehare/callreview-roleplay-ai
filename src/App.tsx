@@ -1,23 +1,14 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthForm } from "./components/auth/AuthForm";
-import { Dashboard } from "./components/dashboard/Dashboard";
-import { RoleplaySession } from "./components/roleplay/RoleplaySession";
-import { AuthProvider } from "./components/auth/AuthProvider";
-import { ProtectedRoute } from "./components/auth/ProtectedRoute";
-import { useAuth } from "./components/auth/AuthProvider";
+import { Routes, Route, Navigate } from "react-router-dom";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { AuthForm } from "@/components/auth/AuthForm";
+import { Dashboard } from "@/components/dashboard/Dashboard";
+import { RoleplaySession } from "@/components/roleplay/RoleplaySession";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { Profile } from "@/pages/Profile";
+import { Header } from "@/components/layout/Header";
 
-const queryClient = new QueryClient();
-
-const AppRoutes = () => {
-  const { session, loading } = useAuth();
-
-  if (loading) {
-    return null; // Or a loading spinner
-  }
+export const App = () => {
+  const { session } = useAuth();
 
   return (
     <Routes>
@@ -35,6 +26,7 @@ const AppRoutes = () => {
         path="/dashboard"
         element={
           <ProtectedRoute>
+            <Header />
             <Dashboard />
           </ProtectedRoute>
         }
@@ -43,7 +35,17 @@ const AppRoutes = () => {
         path="/roleplay"
         element={
           <ProtectedRoute>
+            <Header />
             <RoleplaySession />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <Header />
+            <Profile />
           </ProtectedRoute>
         }
       />
@@ -61,23 +63,3 @@ const AppRoutes = () => {
     </Routes>
   );
 };
-
-const App = () => {
-  return (
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <div className="min-h-screen bg-background">
-              <AppRoutes />
-            </div>
-          </BrowserRouter>
-        </AuthProvider>
-      </TooltipProvider>
-    </QueryClientProvider>
-  );
-};
-
-export default App;
