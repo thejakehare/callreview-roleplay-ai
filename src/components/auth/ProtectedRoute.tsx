@@ -1,6 +1,5 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "./AuthProvider";
-import { Header } from "../layout/Header";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -13,10 +12,5 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     return <Navigate to="/" replace />;
   }
 
-  return (
-    <>
-      <Header />
-      {children}
-    </>
-  );
+  return <>{children}</>;
 };
