@@ -75,7 +75,7 @@ export const Header = () => {
           <DropdownMenuTrigger asChild>
             <Button 
               variant="ghost" 
-              className="w-10 h-10 rounded-full p-0 border border-border"
+              className="w-10 h-10 rounded-full p-0 border border-transparent"
               disabled={loading}
             >
               {loading ? (
