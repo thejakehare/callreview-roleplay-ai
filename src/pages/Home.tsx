@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Power } from "lucide-react";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -71,10 +70,20 @@ const Home = () => {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-border/40 py-4 px-8 mt-16">
+      <footer className="relative z-10 w-full border-t border-border/40 py-4 px-8 mt-16 bg-black">
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <span>Powered by</span>
-          <Power className="h-4 w-4" />
+          <a 
+            href="https://callreview.ai?utm_source=roleplayai" 
+            target="_blank" 
+            rel="noopener noreferrer"
+          >
+            <img 
+              src="/lovable-uploads/bae407cd-af41-4e2c-b520-2c31732e4a94.png" 
+              alt="CallReviewAI" 
+              className="h-4 w-auto"
+            />
+          </a>
         </div>
       </footer>
     </div>
