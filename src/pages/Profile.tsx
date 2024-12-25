@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FormInput } from "@/components/auth/FormInput";
@@ -14,8 +14,7 @@ export const Profile = () => {
   const [role, setRole] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  // Fetch profile data on component mount
-  useState(() => {
+  useEffect(() => {
     const getProfile = async () => {
       if (!session?.user.id) return;
 
@@ -93,14 +92,15 @@ export const Profile = () => {
               value={website}
               onChange={(e) => setWebsite(e.target.value)}
               icon={Link}
-              disabled
+              readOnly
             />
 
             <FormInput
               type="text"
               label="Role"
               value={role}
-              disabled
+              onChange={(e) => setRole(e.target.value)}
+              readOnly
             />
 
             <Button

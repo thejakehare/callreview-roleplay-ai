@@ -7,7 +7,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
 import { Header } from "@/components/layout/Header";
 
-export const App = () => {
+const App = () => {
   const { session } = useAuth();
 
   return (
@@ -63,3 +63,5 @@ export const App = () => {
     </Routes>
   );
 };
+
+export { App };
