@@ -4,7 +4,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthForm } from "./components/auth/AuthForm";
-import { OnboardingForm } from "./components/auth/OnboardingForm";
 import { Dashboard } from "./components/dashboard/Dashboard";
 import { RoleplaySession } from "./components/roleplay/RoleplaySession";
 import { AuthProvider } from "./components/auth/AuthProvider";
@@ -14,7 +13,7 @@ import { useAuth } from "./components/auth/AuthProvider";
 const queryClient = new QueryClient();
 
 const AppRoutes = () => {
-  const { session, loading, onboardingCompleted } = useAuth();
+  const { session, loading } = useAuth();
 
   if (loading) {
     return null; // Or a loading spinner
@@ -29,20 +28,6 @@ const AppRoutes = () => {
             <Navigate to="/dashboard" replace />
           ) : (
             <AuthForm />
-          )
-        }
-      />
-      <Route
-        path="/onboarding"
-        element={
-          session ? (
-            onboardingCompleted ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <OnboardingForm />
-            )
-          ) : (
-            <Navigate to="/" replace />
           )
         }
       />
