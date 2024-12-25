@@ -47,6 +47,17 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      {/* Catch all route - redirect to dashboard or home */}
+      <Route
+        path="*"
+        element={
+          session ? (
+            <Navigate to="/dashboard" replace />
+          ) : (
+            <Navigate to="/" replace />
+          )
+        }
+      />
     </Routes>
   );
 };
