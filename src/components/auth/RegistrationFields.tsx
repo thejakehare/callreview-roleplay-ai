@@ -10,6 +10,13 @@ interface RegistrationFieldsProps {
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const roleDisplayNames: Record<string, string> = {
+  sales_rep: "Sales Rep",
+  sales_manager: "Sales Manager",
+  founder_ceo: "Founder/CEO",
+  other: "Other"
+};
+
 export const RegistrationFields = ({
   website,
   setWebsite,
@@ -44,20 +51,22 @@ export const RegistrationFields = ({
         </label>
         <Select value={role} onValueChange={setRole}>
           <SelectTrigger className="bg-secondary border-0 text-foreground">
-            <SelectValue placeholder="Select your role" />
+            <SelectValue placeholder="Select your role">
+              {role ? roleDisplayNames[role] : "Select your role"}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-[#222222] border-0">
             <SelectItem value="sales_rep" className="focus:bg-[#333333] cursor-pointer">
-              Sales Rep
+              {roleDisplayNames.sales_rep}
             </SelectItem>
             <SelectItem value="sales_manager" className="focus:bg-[#333333] cursor-pointer">
-              Sales Manager
+              {roleDisplayNames.sales_manager}
             </SelectItem>
             <SelectItem value="founder_ceo" className="focus:bg-[#333333] cursor-pointer">
-              Founder/CEO
+              {roleDisplayNames.founder_ceo}
             </SelectItem>
             <SelectItem value="other" className="focus:bg-[#333333] cursor-pointer">
-              Other
+              {roleDisplayNames.other}
             </SelectItem>
           </SelectContent>
         </Select>

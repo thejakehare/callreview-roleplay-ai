@@ -7,6 +7,13 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
 import { Link } from "lucide-react";
 
+const roleDisplayNames: Record<string, string> = {
+  sales_rep: "Sales Rep",
+  sales_manager: "Sales Manager",
+  founder_ceo: "Founder/CEO",
+  other: "Other"
+};
+
 export const Profile = () => {
   const { session } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -98,7 +105,7 @@ export const Profile = () => {
             <FormInput
               type="text"
               label="Role"
-              value={role}
+              value={roleDisplayNames[role] || role}
               onChange={(e) => setRole(e.target.value)}
               readOnly
             />
