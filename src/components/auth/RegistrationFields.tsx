@@ -1,6 +1,7 @@
 import { FormInput } from "./FormInput";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Camera, Link, Users } from "lucide-react";
+import { roleDisplayNames } from "@/utils/roleUtils";
 
 interface RegistrationFieldsProps {
   website: string;
@@ -9,13 +10,6 @@ interface RegistrationFieldsProps {
   setRole: (value: string) => void;
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
-
-const roleDisplayNames: Record<string, string> = {
-  sales_rep: "Sales Rep",
-  sales_manager: "Sales Manager",
-  founder_ceo: "Founder/CEO",
-  other: "Other"
-};
 
 export const RegistrationFields = ({
   website,
@@ -56,18 +50,15 @@ export const RegistrationFields = ({
             </SelectValue>
           </SelectTrigger>
           <SelectContent className="bg-[#222222] border-0">
-            <SelectItem value="sales_rep" className="focus:bg-[#333333] cursor-pointer">
-              {roleDisplayNames.sales_rep}
-            </SelectItem>
-            <SelectItem value="sales_manager" className="focus:bg-[#333333] cursor-pointer">
-              {roleDisplayNames.sales_manager}
-            </SelectItem>
-            <SelectItem value="founder_ceo" className="focus:bg-[#333333] cursor-pointer">
-              {roleDisplayNames.founder_ceo}
-            </SelectItem>
-            <SelectItem value="other" className="focus:bg-[#333333] cursor-pointer">
-              {roleDisplayNames.other}
-            </SelectItem>
+            {Object.entries(roleDisplayNames).map(([value, label]) => (
+              <SelectItem 
+                key={value} 
+                value={value} 
+                className="focus:bg-[#333333] cursor-pointer"
+              >
+                {label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>

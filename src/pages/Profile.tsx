@@ -1,18 +1,10 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { FormInput } from "@/components/auth/FormInput";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
-import { Link } from "lucide-react";
-
-const roleDisplayNames: Record<string, string> = {
-  sales_rep: "Sales Rep",
-  sales_manager: "Sales Manager",
-  founder_ceo: "Founder/CEO",
-  other: "Other"
-};
+import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
+import { ProfileForm } from "@/components/profile/ProfileForm";
 
 export const Profile = () => {
   const { session } = useAuth();
@@ -70,54 +62,16 @@ export const Profile = () => {
           <CardTitle className="text-foreground">Profile Settings</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="h-20 w-20 rounded-full overflow-hidden bg-secondary">
-                {avatarUrl ? (
-                  <img 
-                    src={avatarUrl} 
-                    alt="Profile" 
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center bg-primary/10">
-                    {session?.user.email?.charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div>
-                <h3 className="text-lg font-medium text-foreground">
-                  {session?.user.email}
-                </h3>
-              </div>
-            </div>
-
-            <FormInput
-              type="url"
-              label="Company Website"
-              placeholder="https://example.com"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
-              icon={Link}
-              readOnly
-            />
-
-            <FormInput
-              type="text"
-              label="Role"
-              value={roleDisplayNames[role] || role}
-              onChange={(e) => setRole(e.target.value)}
-              readOnly
-            />
-
-            <Button
-              onClick={handleResetPassword}
-              className="w-full"
-              disabled={loading}
-            >
-              Reset Password
-            </Button>
-          </div>
+          <ProfileAvatar 
+            avatarUrl={avatarUrl} 
+            email={session?.user.email || ""} 
+          />
+          <ProfileForm
+            website={website}
+            role={role}
+            loading={loading}
+            onResetPassword={handleResetPassword}
+          />
         </CardContent>
       </Card>
     </div>
