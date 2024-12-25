@@ -1,45 +1,34 @@
+import { InputHTMLAttributes } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LucideIcon } from "lucide-react";
 
-interface FormInputProps {
+export interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
-  type: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  placeholder?: string;
-  required?: boolean;
   icon?: LucideIcon;
-  accept?: string;
+  readOnly?: boolean;
 }
 
-export const FormInput = ({
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  required = false,
-  icon: Icon,
-  accept,
-}: FormInputProps) => {
+export const FormInput = ({ label, icon: Icon, readOnly, ...props }: FormInputProps) => {
   return (
     <div className="space-y-2">
       {label && (
-        <Label className="flex items-center gap-2 text-sm text-foreground">
-          {Icon && <Icon className="h-4 w-4" />}
+        <Label htmlFor={props.id} className="text-sm font-medium text-foreground">
           {label}
         </Label>
       )}
-      <Input
-        type={type}
-        placeholder={placeholder}
-        value={value}
-        onChange={onChange}
-        required={required}
-        accept={accept}
-        className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
-      />
+      <div className="relative">
+        {Icon && (
+          <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-muted-foreground">
+            <Icon className="h-4 w-4" />
+          </div>
+        )}
+        <Input
+          {...props}
+          readOnly={readOnly}
+          className={`${Icon ? 'pl-10' : ''} ${readOnly ? 'bg-muted cursor-not-allowed' : ''}`}
+        />
+      </div>
     </div>
   );
 };
