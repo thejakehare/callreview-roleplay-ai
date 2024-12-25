@@ -84,7 +84,7 @@ const Home = () => {
       </div>
 
       {/* Footer */}
-      <footer className="relative z-10 w-full border-t border-border/40 py-4 px-8 mt-16 bg-black">
+      <footer className="relative z-10 w-full py-4 px-8 mt-16 bg-black">
         <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
           <span>Powered by</span>
           <a 
