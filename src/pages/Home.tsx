@@ -1,8 +1,46 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+} from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
+
+const features = [
+  {
+    title: "Practice Real Sales Scenarios",
+    description: "Get hands-on experience with common sales objections and challenging customer conversations.",
+    icon: "💼",
+  },
+  {
+    title: "AI-Powered Feedback",
+    description: "Receive instant, personalized feedback on your sales approach and communication style.",
+    icon: "🤖",
+  },
+  {
+    title: "Track Your Progress",
+    description: "Monitor your improvement over time with detailed performance analytics and insights.",
+    icon: "📈",
+  },
+  {
+    title: "Available 24/7",
+    description: "Practice whenever you want, as much as you want. Your AI sales coach is always ready.",
+    icon: "⏰",
+  },
+];
 
 const Home = () => {
   const navigate = useNavigate();
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % features.length);
+    }, 3000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-between relative overflow-hidden">
@@ -15,56 +53,108 @@ const Home = () => {
       />
       
       {/* Main content */}
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        {/* Badge */}
-        <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/50 text-purple-200 mb-8">
-          For high ticket sales reps & teams
+      <div className="relative z-10 w-full">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          {/* Badge */}
+          <div className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-purple-900/50 text-purple-200 mb-8">
+            For high ticket sales reps & teams
+          </div>
+
+          {/* Hero Text */}
+          <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6">
+            Get your own personal
+            <br />
+            <span className="text-primary">sales roleplay partner</span>
+          </h1>
+
+          <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
+            The best way to improve your sales skills is through practice and repetition. 
+            Now you can practice anytime, anywhere with the help of AI.
+          </p>
+
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button
+              onClick={() => navigate("/auth")}
+              size="lg"
+              className="text-lg px-8 py-6"
+            >
+              Create your free account
+            </Button>
+            <Button
+              onClick={() => navigate("/auth")}
+              variant="secondary"
+              size="lg"
+              className="text-lg px-8 py-6"
+            >
+              Login
+            </Button>
+          </div>
+
+          {/* Stats */}
+          <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">1.2M+</div>
+              <div className="text-sm text-muted-foreground">Active Users</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">99.9%</div>
+              <div className="text-sm text-muted-foreground">Success Rate</div>
+            </div>
+            <div className="text-center">
+              <div className="text-3xl font-bold text-white">12+</div>
+              <div className="text-sm text-muted-foreground">AI Models</div>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Text */}
-        <h1 className="text-4xl sm:text-6xl font-bold text-white mb-6">
-          Get your own personal
-          <br />
-          <span className="text-primary">sales roleplay partner</span>
-        </h1>
+        {/* Features Section */}
+        <div className="mt-32 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left side - Feature List */}
+            <div className="space-y-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className={`p-6 rounded-xl transition-all duration-300 ${
+                    index === activeFeature
+                      ? "bg-card scale-105 shadow-xl"
+                      : "opacity-50"
+                  }`}
+                  onClick={() => setActiveFeature(index)}
+                >
+                  <div className="flex items-start gap-4">
+                    <span className="text-4xl">{feature.icon}</span>
+                    <div>
+                      <h3 className="text-xl font-semibold text-white mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-muted-foreground">
+                        {feature.description}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-        <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
-          The best way to improve your sales skills is through practice and repetition. 
-          Now you can practice anytime, anywhere with the help of AI.
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Button
-            onClick={() => navigate("/auth")}
-            size="lg"
-            className="text-lg px-8 py-6"
-          >
-            Create your free account
-          </Button>
-          <Button
-            onClick={() => navigate("/auth")}
-            variant="secondary"
-            size="lg"
-            className="text-lg px-8 py-6"
-          >
-            Login
-          </Button>
-        </div>
-
-        {/* Stats */}
-        <div className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white">1.2M+</div>
-            <div className="text-sm text-muted-foreground">Active Users</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white">99.9%</div>
-            <div className="text-sm text-muted-foreground">Success Rate</div>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-white">12+</div>
-            <div className="text-sm text-muted-foreground">AI Models</div>
+            {/* Right side - Interactive Preview */}
+            <div className="relative h-[600px] rounded-xl bg-card p-6 shadow-2xl">
+              <Carousel className="w-full h-full" opts={{ loop: true }}>
+                <CarouselContent>
+                  {features.map((feature, index) => (
+                    <CarouselItem key={index} className={`${index === activeFeature ? 'block' : 'hidden'}`}>
+                      <div className="h-full w-full flex items-center justify-center">
+                        <div className="text-center">
+                          <span className="text-8xl mb-4 block">{feature.icon}</span>
+                          <h4 className="text-2xl font-semibold text-white mb-2">{feature.title}</h4>
+                        </div>
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+              </Carousel>
+            </div>
           </div>
         </div>
       </div>
