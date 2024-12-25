@@ -9,12 +9,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { session } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -27,16 +29,32 @@ export const Header = () => {
 
   useEffect(() => {
     const getProfile = async () => {
-      if (!session?.user.id) return;
+      if (!session?.user.id) {
+        setLoading(false);
+        return;
+      }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('avatar_url')
-        .eq('id', session.user.id)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', session.user.id)
+          .maybeSingle();
 
-      if (!error && data) {
-        setAvatarUrl(data.avatar_url);
+        if (error) {
+          console.error('Error fetching profile:', error);
+          toast.error('Error loading profile');
+          return;
+        }
+
+        if (data) {
+          setAvatarUrl(data.avatar_url);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error('An error occurred while loading profile');
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -59,8 +77,11 @@ export const Header = () => {
             <Button 
               variant="ghost" 
               className="w-10 h-10 rounded-full p-0 border border-border"
+              disabled={loading}
             >
-              {avatarUrl ? (
+              {loading ? (
+                <div className="w-full h-full rounded-full animate-pulse bg-primary/10" />
+              ) : avatarUrl ? (
                 <img 
                   src={avatarUrl} 
                   alt="Profile" 
