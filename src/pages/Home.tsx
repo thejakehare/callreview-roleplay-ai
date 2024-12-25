@@ -27,7 +27,7 @@ const Home = () => {
         <img 
           src={publicUrl}
           alt="Logo Animation"
-          className="w-auto max-w-[200px] mx-auto mb-8"
+          className="w-auto max-w-[125px] mx-auto mb-8"
         />
 
         {/* Badge */}
