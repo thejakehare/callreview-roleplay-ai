@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Camera, Link, Users } from "lucide-react";
+import { FormInput } from "./FormInput";
+import { RegistrationFields } from "./RegistrationFields";
+import { FormFooter } from "./FormFooter";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(false);
@@ -124,91 +123,41 @@ export const AuthForm = () => {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
+              <FormInput
                 type="email"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
               />
-              <Input
+              
+              <FormInput
                 type="password"
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="bg-secondary border-0 text-foreground placeholder:text-muted-foreground"
               />
 
               {!isLogin && (
-                <>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-foreground">
-                      <Camera className="h-4 w-4" />
-                      Profile Picture
-                    </label>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => {
-                        if (e.target.files && e.target.files[0]) {
-                          setAvatar(e.target.files[0]);
-                        }
-                      }}
-                      className="bg-secondary border-0 text-foreground"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-foreground">
-                      <Link className="h-4 w-4" />
-                      Company Website
-                    </label>
-                    <Input
-                      type="url"
-                      placeholder="https://example.com"
-                      value={website}
-                      onChange={(e) => setWebsite(e.target.value)}
-                      className="bg-secondary border-0 text-foreground"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-foreground">
-                      <Users className="h-4 w-4" />
-                      Role
-                    </label>
-                    <Select value={role} onValueChange={setRole}>
-                      <SelectTrigger className="bg-secondary border-0 text-foreground">
-                        <SelectValue placeholder="Select your role" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#222222] border-0">
-                        <SelectItem value="sales_rep" className="focus:bg-[#333333] cursor-pointer">Sales Rep</SelectItem>
-                        <SelectItem value="sales_manager" className="focus:bg-[#333333] cursor-pointer">Sales Manager</SelectItem>
-                        <SelectItem value="founder_ceo" className="focus:bg-[#333333] cursor-pointer">Founder/CEO</SelectItem>
-                        <SelectItem value="other" className="focus:bg-[#333333] cursor-pointer">Other</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </>
+                <RegistrationFields
+                  website={website}
+                  setWebsite={setWebsite}
+                  role={role}
+                  setRole={setRole}
+                  onAvatarChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setAvatar(e.target.files[0]);
+                    }
+                  }}
+                />
               )}
 
-              <Button 
-                type="submit" 
-                className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" 
-                disabled={loading}
-              >
-                {loading ? "Loading..." : isLogin ? "Login" : "Register"}
-              </Button>
-              <Button
-                type="button"
-                variant="link"
-                className="w-full text-primary hover:text-primary/90"
-                onClick={() => setIsLogin(!isLogin)}
-              >
-                {isLogin ? "Need an account? Register" : "Have an account? Login"}
-              </Button>
+              <FormFooter
+                isLogin={isLogin}
+                loading={loading}
+                onToggleMode={() => setIsLogin(!isLogin)}
+              />
             </form>
           </CardContent>
         </Card>
