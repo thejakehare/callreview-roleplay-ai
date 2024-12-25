@@ -19,8 +19,19 @@ export const Header = () => {
   const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.error('Error during logout:', error);
+        toast.error('Error during logout');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('An error occurred during logout');
+    } finally {
+      // Always navigate to home page, even if logout fails
+      navigate("/");
+    }
   };
 
   const isActive = (path: string) => {
