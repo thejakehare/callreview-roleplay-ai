@@ -81,7 +81,7 @@ const Home = () => {
             <img 
               src="/lovable-uploads/bae407cd-af41-4e2c-b520-2c31732e4a94.png" 
               alt="CallReviewAI" 
-              className="h-4 w-auto"
+              className="h-6 w-auto"
             />
           </a>
         </div>
