@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Play, History } from "lucide-react";
+import { Play, History, UserPlus } from "lucide-react";
 import { SessionHistory } from "@/components/history/SessionHistory";
 import { SessionFavorites } from "@/components/favorites/SessionFavorites";
 import { useState } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { InvitationForm } from "@/components/invitations/InvitationForm";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
@@ -13,6 +15,23 @@ export const Dashboard = () => {
   return (
     <div className="flex min-h-screen flex-col">
       <div className="container mx-auto py-12 px-4 space-y-8 flex-grow">
+        <div className="flex justify-end mb-6">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <UserPlus className="mr-2 h-4 w-4" />
+                Invite Team Member
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Invite Team Member</DialogTitle>
+              </DialogHeader>
+              <InvitationForm />
+            </DialogContent>
+          </Dialog>
+        </div>
+        
         <div className="grid md:grid-cols-2 gap-8">
           <Card 
             className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0" 
@@ -45,6 +64,7 @@ export const Dashboard = () => {
             </CardContent>
           </Card>
         </div>
+        
         {showHistory && (
           <div className="grid md:grid-cols-2 gap-8 mt-12">
             <SessionHistory />
@@ -52,6 +72,7 @@ export const Dashboard = () => {
           </div>
         )}
       </div>
+      
       <div className="flex items-center justify-center gap-2 p-4">
         <span className="text-muted-foreground">Powered by</span>
         <a 
