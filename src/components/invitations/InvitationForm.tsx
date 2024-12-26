@@ -23,7 +23,7 @@ export const InvitationForm = () => {
   const { session } = useAuth();
 
   // Fetch accounts where the user is an admin
-  const { data: adminAccounts, isLoading: loadingAccounts } = useQuery<AdminAccount[]>({
+  const { data: adminAccounts = [], isLoading: loadingAccounts } = useQuery<AdminAccount[]>({
     queryKey: ['adminAccounts'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -39,7 +39,7 @@ export const InvitationForm = () => {
         .eq('role', 'admin');
 
       if (error) throw error;
-      return data;
+      return data as AdminAccount[];
     },
   });
 
@@ -118,7 +118,7 @@ export const InvitationForm = () => {
             <SelectValue placeholder="Select an account" />
           </SelectTrigger>
           <SelectContent>
-            {adminAccounts?.map((account) => (
+            {adminAccounts.map((account) => (
               <SelectItem 
                 key={account.accounts.id} 
                 value={account.accounts.id}
