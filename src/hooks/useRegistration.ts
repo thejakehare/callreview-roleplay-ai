@@ -19,6 +19,15 @@ export const useRegistration = () => {
     setLoading(true);
 
     try {
+      console.log("Starting registration with data:", {
+        email,
+        firstName,
+        lastName,
+        accountName,
+        role,
+        hasAvatar: !!avatar
+      });
+
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
@@ -27,9 +36,12 @@ export const useRegistration = () => {
             first_name: firstName,
             last_name: lastName,
             account_name: accountName,
+            role: role
           },
         },
       });
+
+      console.log("Registration response:", { data, error: signUpError });
 
       if (signUpError) {
         if (signUpError.message.includes("User already registered") || 
@@ -41,14 +53,25 @@ export const useRegistration = () => {
           return false;
         } else {
           console.error("Registration error:", signUpError);
+          // Log the full error object for debugging
+          console.error("Full error details:", {
+            message: signUpError.message,
+            status: signUpError.status,
+            name: signUpError.name,
+            stack: signUpError.stack,
+            details: signUpError
+          });
           toast.error(signUpError.message);
           return false;
         }
       }
 
       if (data.user) {
+        console.log("User created successfully:", data.user);
+        
         let avatarUrl = null;
         if (avatar) {
+          console.log("Uploading avatar...");
           const fileExt = avatar.name.split('.').pop();
           const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
 
@@ -67,6 +90,7 @@ export const useRegistration = () => {
             .getPublicUrl(filePath);
 
           avatarUrl = publicUrl;
+          console.log("Avatar uploaded successfully:", avatarUrl);
         }
 
         const { error: profileError } = await supabase
@@ -86,12 +110,21 @@ export const useRegistration = () => {
           return false;
         }
 
+        console.log("Profile updated successfully");
         toast.success("Registration successful! Please check your email for confirmation.");
         navigate("/dashboard");
         return true;
       }
     } catch (error: any) {
       console.error("Registration error:", error);
+      // Log the full error object for debugging
+      console.error("Full error details:", {
+        message: error.message,
+        status: error.status,
+        name: error.name,
+        stack: error.stack,
+        details: error
+      });
       toast.error(error.message || "An error occurred during registration");
       return false;
     } finally {
