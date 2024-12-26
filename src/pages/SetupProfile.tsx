@@ -15,8 +15,16 @@ export const SetupProfile = () => {
   const [lastName, setLastName] = useState("");
 
   const handleSave = async () => {
-    if (!session?.user.id) return;
+    if (!session?.user.id) {
+      toast.error("No user session found");
+      return;
+    }
     
+    if (!firstName || !lastName || !role) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
     setLoading(true);
     const success = await profileApi.createProfile(session.user.id, {
       role,

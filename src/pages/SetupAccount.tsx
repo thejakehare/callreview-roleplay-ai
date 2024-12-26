@@ -15,23 +15,44 @@ export const SetupAccount = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!session?.user.id) return;
+    if (!session?.user.id) {
+      toast.error("No user session found");
+      return;
+    }
+
+    if (!accountName.trim()) {
+      toast.error("Please enter an account name");
+      return;
+    }
 
     setLoading(true);
-    const { error } = await supabase
-      .from('accounts')
-      .insert([
-        { name: accountName, owner_id: session.user.id }
-      ]);
+    
+    try {
+      // Create the account with the current user as owner
+      const { data: account, error: accountError } = await supabase
+        .from('accounts')
+        .insert([
+          { 
+            name: accountName, 
+            owner_id: session.user.id 
+          }
+        ])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Error creating account:', error);
-      toast.error('Error creating account');
-    } else {
+      if (accountError) throw accountError;
+
+      // Account member creation is handled by the database trigger
+      // that ensures the owner is added as an admin
+
       toast.success('Account created successfully');
       navigate('/dashboard');
+    } catch (error: any) {
+      console.error('Error creating account:', error);
+      toast.error(error.message || 'Error creating account');
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (
