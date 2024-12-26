@@ -15,6 +15,7 @@ interface ProfileFormProps {
   onRoleChange: (value: string) => void;
   onSave: () => void;
   onAvatarUpload: (file: File) => void;
+  isSetupProfile?: boolean;
 }
 
 export const ProfileForm = ({ 
@@ -27,7 +28,8 @@ export const ProfileForm = ({
   onLastNameChange,
   onRoleChange,
   onSave,
-  onAvatarUpload
+  onAvatarUpload,
+  isSetupProfile = false
 }: ProfileFormProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -100,17 +102,19 @@ export const ProfileForm = ({
           className="w-full"
           disabled={loading}
         >
-          Save Changes
+          {isSetupProfile ? "Create Your Account" : "Save Changes"}
         </Button>
 
-        <Button
-          onClick={onResetPassword}
-          variant="outline"
-          className="w-full"
-          disabled={loading}
-        >
-          Reset Password
-        </Button>
+        {!isSetupProfile && (
+          <Button
+            onClick={onResetPassword}
+            variant="outline"
+            className="w-full"
+            disabled={loading}
+          >
+            Reset Password
+          </Button>
+        )}
       </div>
     </div>
   );

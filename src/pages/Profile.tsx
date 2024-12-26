@@ -20,6 +20,9 @@ export const Profile = () => {
     handleResetPassword
   } = useProfileData();
 
+  // Hide header if we're on the setup-profile route
+  const isSetupProfile = window.location.pathname === '/setup-profile';
+
   return (
     <div className="min-h-screen bg-background p-8">
       <Card className="max-w-2xl mx-auto bg-card border-0">
@@ -42,6 +45,7 @@ export const Profile = () => {
             onRoleChange={setRole}
             onSave={handleSave}
             onAvatarUpload={handleAvatarUpload}
+            isSetupProfile={isSetupProfile}
           />
         </CardContent>
       </Card>
