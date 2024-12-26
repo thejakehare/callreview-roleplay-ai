@@ -40,7 +40,12 @@ export const AuthForm = () => {
       });
 
       if (signUpError) {
-        if (signUpError.message.includes("User already registered")) {
+        // Check if the error is due to an existing user
+        if (signUpError.message.includes("User already registered") || 
+            (typeof signUpError === 'object' && 
+             'body' in signUpError && 
+             typeof signUpError.body === 'string' && 
+             signUpError.body.includes("user_already_exists"))) {
           toast.error("An account with this email already exists. Please try logging in instead.");
           setIsLogin(true);
         } else {
