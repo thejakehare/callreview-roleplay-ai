@@ -4,6 +4,7 @@ import { AuthFields } from "./AuthFields";
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface RegistrationFormProps {
   onBack: () => void;
@@ -13,6 +14,7 @@ export const RegistrationForm = ({ onBack }: RegistrationFormProps) => {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +32,12 @@ export const RegistrationForm = ({ onBack }: RegistrationFormProps) => {
       } else {
         toast.error(error.message);
       }
+      setLoading(false);
+      return;
     }
 
+    toast.success("Registration successful! Please set up your profile.");
+    navigate("/setup-profile");
     setLoading(false);
   };
 

@@ -49,6 +49,31 @@ export const LoginForm = ({
 
       if (data?.user) {
         console.log("Login successful, user:", data.user);
+        
+        // Check if user has a profile
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        if (!profileData) {
+          navigate("/setup-profile");
+          return;
+        }
+
+        // Check if user belongs to an account
+        const { data: accountMember } = await supabase
+          .from('account_members')
+          .select('*')
+          .eq('user_id', data.user.id)
+          .single();
+
+        if (!accountMember) {
+          navigate("/setup-account");
+          return;
+        }
+
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       }
