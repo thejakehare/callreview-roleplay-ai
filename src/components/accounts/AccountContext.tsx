@@ -44,10 +44,11 @@ export const AccountProvider = ({ children }: { children: React.ReactNode }) => 
 
       if (error) throw error;
 
-      const formattedAccounts = data.map(({ account, role }) => ({
-        id: account.id,
-        name: account.name,
-        role: role,
+      // Properly format the accounts data
+      const formattedAccounts = data.map((item) => ({
+        id: item.account.id,
+        name: item.account.name,
+        role: item.role,
       }));
 
       setAccounts(formattedAccounts);
