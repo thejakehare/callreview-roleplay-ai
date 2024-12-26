@@ -6,10 +6,12 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import { Account } from "@/types/account";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export const Header = () => {
   const { session } = useAuth();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [accounts, setAccounts] = useState<Account[]>([]);
 
   const handleLogout = async () => {
     try {
@@ -29,7 +32,6 @@ export const Header = () => {
       console.error('Error:', error);
       toast.error('An error occurred during logout');
     } finally {
-      // Always navigate to home page, even if logout fails
       navigate("/");
     }
   };
@@ -42,21 +44,34 @@ export const Header = () => {
       }
 
       try {
-        const { data, error } = await supabase
+        const { data: profileData, error: profileError } = await supabase
           .from('profiles')
           .select('avatar_url')
           .eq('id', session.user.id)
           .maybeSingle();
 
-        if (error) {
-          console.error('Error fetching profile:', error);
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
           toast.error('Error loading profile');
           return;
         }
 
-        if (data) {
-          setAvatarUrl(data.avatar_url);
+        if (profileData) {
+          setAvatarUrl(profileData.avatar_url);
         }
+
+        const { data: accountsData, error: accountsError } = await supabase
+          .from('accounts')
+          .select('*')
+          .order('name');
+
+        if (accountsError) {
+          console.error('Error fetching accounts:', accountsError);
+          toast.error('Error loading accounts');
+          return;
+        }
+
+        setAccounts(accountsData || []);
       } catch (error) {
         console.error('Error:', error);
         toast.error('An error occurred while loading profile');
@@ -70,7 +85,36 @@ export const Header = () => {
 
   return (
     <header className="bg-background">
-      <div className="container mx-auto px-4 h-16 flex items-center justify-end gap-4">
+      <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center space-x-4">
+          {accounts.length > 0 && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline">
+                  {accounts[0]?.name || "Select Account"}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-48 bg-popover border-border">
+                {accounts.map((account) => (
+                  <DropdownMenuItem
+                    key={account.id}
+                    onClick={() => navigate(`/accounts/${account.id}`)}
+                    className="cursor-pointer"
+                  >
+                    {account.name}
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => navigate("/accounts")}
+                  className="cursor-pointer"
+                >
+                  Manage Accounts
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button 
@@ -105,6 +149,12 @@ export const Header = () => {
               className="cursor-pointer"
             >
               Profile
+            </DropdownMenuItem>
+            <DropdownMenuItem 
+              onClick={() => navigate("/accounts")}
+              className="cursor-pointer"
+            >
+              Accounts
             </DropdownMenuItem>
             <DropdownMenuItem 
               onClick={handleLogout}
