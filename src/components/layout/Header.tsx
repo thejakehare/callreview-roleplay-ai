@@ -11,16 +11,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/lib/supabase";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
-  const { avatarUrl } = useProfileData();
   const { session } = useAuth();
+  const { avatarUrl } = useProfileData();
   const email = session?.user?.email;
 
   const handleSignOut = async () => {
-    await signOut();
+    await supabase.auth.signOut();
     navigate("/auth");
   };
 

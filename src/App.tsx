@@ -7,7 +7,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
 import { SessionDetails } from "@/pages/SessionDetails";
 import Home from "@/pages/Home";
-import { Header } from "@/components/layout/Header";
+import Header from "@/components/layout/Header";
 
 const App = () => {
   const { session } = useAuth();
