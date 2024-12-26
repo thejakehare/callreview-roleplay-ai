@@ -17,6 +17,7 @@ export const Profile = () => {
     const getProfile = async () => {
       if (!session?.user.id) return;
 
+      console.log("Fetching profile for user:", session.user.id);
       const { data, error } = await supabase
         .from('profiles')
         .select('*')
@@ -24,11 +25,13 @@ export const Profile = () => {
         .single();
 
       if (error) {
+        console.error("Error fetching profile:", error);
         toast.error('Error loading profile');
         return;
       }
 
       if (data) {
+        console.log("Profile data received:", data);
         setWebsite(data.company_website || "");
         setRole(data.role || "");
         setAvatarUrl(data.avatar_url);
@@ -37,6 +40,25 @@ export const Profile = () => {
 
     getProfile();
   }, [session?.user.id]);
+
+  const handleWebsiteChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newWebsite = e.target.value;
+    setWebsite(newWebsite);
+    
+    if (!session?.user.id) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ company_website: newWebsite })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error("Error updating website:", error);
+      toast.error('Failed to update website');
+    } else {
+      toast.success('Website updated successfully');
+    }
+  };
 
   const handleResetPassword = async () => {
     try {
@@ -71,6 +93,7 @@ export const Profile = () => {
             role={role}
             loading={loading}
             onResetPassword={handleResetPassword}
+            onWebsiteChange={handleWebsiteChange}
           />
         </CardContent>
       </Card>

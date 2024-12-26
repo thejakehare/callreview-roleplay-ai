@@ -8,13 +8,15 @@ interface ProfileFormProps {
   role: string;
   loading: boolean;
   onResetPassword: () => void;
+  onWebsiteChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const ProfileForm = ({ 
   website, 
   role, 
   loading, 
-  onResetPassword 
+  onResetPassword,
+  onWebsiteChange
 }: ProfileFormProps) => {
   return (
     <div className="space-y-4">
@@ -23,9 +25,8 @@ export const ProfileForm = ({
         label="Company Website"
         placeholder="https://example.com"
         value={website}
-        onChange={() => {}}
+        onChange={onWebsiteChange}
         icon={Link}
-        readOnly
       />
 
       <FormInput
