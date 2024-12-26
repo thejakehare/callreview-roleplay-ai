@@ -18,7 +18,7 @@ export const SetupProfile = () => {
     if (!session?.user.id) return;
     
     setLoading(true);
-    const success = await profileApi.updateProfile(session.user.id, {
+    const success = await profileApi.createProfile(session.user.id, {
       role,
       first_name: firstName,
       last_name: lastName,
@@ -57,6 +57,7 @@ export const SetupProfile = () => {
             onRoleChange={setRole}
             onSave={handleSave}
             onAvatarUpload={handleAvatarUpload}
+            isSetupProfile={true}
           />
         </CardContent>
       </Card>

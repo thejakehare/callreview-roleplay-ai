@@ -33,6 +33,23 @@ export const profileApi = {
     return null;
   },
 
+  async createProfile(userId: string, profile: Partial<Profile>): Promise<boolean> {
+    console.log('Creating profile for user:', userId, 'with data:', profile);
+    
+    const { error } = await supabase
+      .from('profiles')
+      .insert([{ id: userId, ...profile }]);
+
+    if (error) {
+      console.error('Error creating profile:', error);
+      toast.error('Error creating profile');
+      return false;
+    }
+
+    toast.success('Profile created successfully');
+    return true;
+  },
+
   async updateProfile(userId: string, profile: Partial<Profile>): Promise<boolean> {
     console.log('Updating profile with:', profile);
     
