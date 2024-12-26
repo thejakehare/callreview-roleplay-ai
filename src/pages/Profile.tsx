@@ -11,6 +11,8 @@ export const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [website, setWebsite] = useState("");
   const [role, setRole] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
@@ -26,7 +28,7 @@ export const Profile = () => {
         console.log("Fetching profile for user:", session.user.id);
         const { data, error } = await supabase
           .from('profiles')
-          .select('company_website, role, avatar_url')
+          .select('company_website, role, avatar_url, first_name, last_name')
           .eq('id', session.user.id)
           .single();
 
@@ -41,11 +43,8 @@ export const Profile = () => {
           setWebsite(data.company_website || "");
           setRole(data.role || "");
           setAvatarUrl(data.avatar_url);
-        } else {
-          console.log("No profile found for user:", session.user.id);
-          setWebsite("");
-          setRole("");
-          setAvatarUrl(null);
+          setFirstName(data.first_name || "");
+          setLastName(data.last_name || "");
         }
       } catch (error) {
         console.error("Unexpected error:", error);
@@ -74,6 +73,44 @@ export const Profile = () => {
       toast.error('Failed to update website');
     } else {
       toast.success('Website updated successfully');
+    }
+  };
+
+  const handleFirstNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newFirstName = e.target.value;
+    setFirstName(newFirstName);
+    
+    if (!session?.user.id) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ first_name: newFirstName })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error("Error updating first name:", error);
+      toast.error('Failed to update first name');
+    } else {
+      toast.success('First name updated successfully');
+    }
+  };
+
+  const handleLastNameChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLastName = e.target.value;
+    setLastName(newLastName);
+    
+    if (!session?.user.id) return;
+
+    const { error } = await supabase
+      .from('profiles')
+      .update({ last_name: newLastName })
+      .eq('id', session.user.id);
+
+    if (error) {
+      console.error("Error updating last name:", error);
+      toast.error('Failed to update last name');
+    } else {
+      toast.success('Last name updated successfully');
     }
   };
 
@@ -108,9 +145,13 @@ export const Profile = () => {
           <ProfileForm
             website={website}
             role={role}
+            firstName={firstName}
+            lastName={lastName}
             loading={loading}
             onResetPassword={handleResetPassword}
             onWebsiteChange={handleWebsiteChange}
+            onFirstNameChange={handleFirstNameChange}
+            onLastNameChange={handleLastNameChange}
           />
         </CardContent>
       </Card>

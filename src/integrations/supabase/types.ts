@@ -96,7 +96,9 @@ export type Database = {
           avatar_url: string | null
           company_website: string | null
           created_at: string
+          first_name: string | null
           id: string
+          last_name: string | null
           onboarding_completed: boolean | null
           role: string | null
           updated_at: string
@@ -105,7 +107,9 @@ export type Database = {
           avatar_url?: string | null
           company_website?: string | null
           created_at?: string
+          first_name?: string | null
           id: string
+          last_name?: string | null
           onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
@@ -114,7 +118,9 @@ export type Database = {
           avatar_url?: string | null
           company_website?: string | null
           created_at?: string
+          first_name?: string | null
           id?: string
+          last_name?: string | null
           onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
