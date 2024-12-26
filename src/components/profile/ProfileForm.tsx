@@ -90,12 +90,16 @@ export const ProfileForm = ({
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Role</label>
         <Select value={role} onValueChange={onRoleChange}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full bg-card">
             <SelectValue placeholder="Select your role" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="bg-card border-border">
             {Object.entries(roleDisplayNames).map(([value, label]) => (
-              <SelectItem key={value} value={value}>
+              <SelectItem 
+                key={value} 
+                value={value}
+                className="hover:bg-accent focus:bg-accent"
+              >
                 {label}
               </SelectItem>
             ))}
