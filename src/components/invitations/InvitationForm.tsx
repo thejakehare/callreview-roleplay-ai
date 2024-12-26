@@ -30,7 +30,7 @@ export const InvitationForm = () => {
         .from('account_members')
         .select(`
           account_id,
-          accounts:account_id (
+          accounts!inner (
             id,
             name
           )
@@ -39,7 +39,12 @@ export const InvitationForm = () => {
         .eq('role', 'admin');
 
       if (error) throw error;
-      return (data || []) as AdminAccount[];
+      
+      // Transform the data to match our type
+      return (data || []).map(item => ({
+        account_id: item.account_id,
+        accounts: item.accounts as { id: string; name: string }
+      }));
     },
   });
 
