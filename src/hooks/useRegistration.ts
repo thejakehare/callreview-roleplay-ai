@@ -19,15 +19,20 @@ export const useRegistration = () => {
     setLoading(true);
 
     try {
-      // Create the user metadata object
+      // Create the user metadata object with the exact structure expected by the trigger
       const userMetadata = {
         first_name: firstName,
         last_name: lastName,
-        account_name: accountName,
+        account_name: accountName || undefined,
         role: role,
+        email: email,
+        email_verified: true,
+        phone_verified: false,
       };
 
-      console.log("Signup payload:", {
+      console.log("Starting registration process with metadata:", userMetadata);
+
+      const { data: signUpResponse, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -35,26 +40,17 @@ export const useRegistration = () => {
         },
       });
 
-      const signUpResponse = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: userMetadata,
-        },
-      });
-
-      if (signUpResponse.error) {
-        console.error("Registration error:", signUpResponse.error);
-        if (signUpResponse.error.message.includes("User already registered")) {
+      if (signUpError) {
+        console.error("Registration error:", signUpError);
+        if (signUpError.message.includes("User already registered")) {
           toast.error("An account with this email already exists. Please try logging in instead.");
           return false;
         }
-        toast.error(signUpResponse.error.message);
+        toast.error(signUpError.message);
         return false;
       }
 
-      const { data: { user } } = signUpResponse;
-      
+      const user = signUpResponse.user;
       if (!user) {
         console.error("No user returned from signup");
         toast.error("Registration failed. Please try again.");
@@ -63,9 +59,9 @@ export const useRegistration = () => {
 
       console.log("User created successfully:", user);
 
-      // Wait longer for profile to be created (increased from 1s to 2s)
+      // Wait for profile creation
       console.log("Waiting for profile creation...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       // Verify profile was created
       console.log("Verifying profile creation for user:", user.id);
@@ -128,7 +124,7 @@ export const useRegistration = () => {
       
       // Wait longer to ensure account creation trigger has completed
       console.log("Waiting for account creation...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       console.log("Registration process completed, navigating to dashboard");
       navigate("/dashboard");
