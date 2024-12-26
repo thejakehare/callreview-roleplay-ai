@@ -62,14 +62,23 @@ export const LoginForm = ({
           return;
         }
 
-        // Check if user belongs to an account
-        const { data: accountMember } = await supabase
+        // Check if user belongs to any account
+        const { data: accountMember, error: accountError } = await supabase
           .from('account_members')
           .select('*')
           .eq('user_id', data.user.id)
-          .single();
+          .maybeSingle();
+
+        console.log("Account member check:", { accountMember, accountError });
+
+        if (accountError) {
+          console.error("Error checking account membership:", accountError);
+          setError("Error checking account membership");
+          return;
+        }
 
         if (!accountMember) {
+          console.log("No account membership found, redirecting to setup-account");
           navigate("/setup-account");
           return;
         }
