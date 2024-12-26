@@ -1,6 +1,6 @@
 import { FormInput } from "./FormInput";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Camera, User, Users } from "lucide-react";
+import { Camera, User, Users, Info } from "lucide-react";
 import { roleDisplayNames } from "@/utils/roleUtils";
 
 interface RegistrationFieldsProps {
@@ -38,7 +38,7 @@ export const RegistrationFields = ({
     <>
       <FormInput
         type="file"
-        label="Profile Picture"
+        label="Profile Picture (Optional)"
         accept="image/*"
         onChange={onAvatarChange}
         icon={Camera}
