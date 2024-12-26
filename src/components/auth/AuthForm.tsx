@@ -5,11 +5,12 @@ import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { FormInput } from "./FormInput";
 import { RegistrationFields } from "./RegistrationFields";
-import { FormFooter } from "./FormFooter";
+import { LoginForm } from "./LoginForm";
+import { PasswordResetForm } from "./PasswordResetForm";
 import { Button } from "@/components/ui/button";
 
 export const AuthForm = () => {
-  const [isLogin, setIsLogin] = useState(false);
+  const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -27,111 +28,71 @@ export const AuthForm = () => {
     });
   }, [navigate]);
 
-  const handlePasswordReset = async (e: React.FormEvent) => {
+  const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth`,
+      const { error: signUpError, data } = await supabase.auth.signUp({
+        email,
+        password,
       });
 
-      if (error) {
-        toast.error(error.message);
+      if (signUpError) {
+        if (signUpError.message.includes("User already registered")) {
+          toast.error("An account with this email already exists. Please try logging in instead.");
+          setIsLogin(true);
+        } else {
+          console.error("Registration error:", signUpError);
+          toast.error(signUpError.message);
+        }
         return;
       }
 
-      toast.success("Password reset instructions sent to your email!");
-      setIsForgotPassword(false);
-    } catch (error: any) {
-      toast.error(error.message || "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  };
+      if (data.user) {
+        let avatarUrl = null;
+        if (avatar) {
+          const fileExt = avatar.name.split('.').pop();
+          const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(filePath, avatar);
 
-    try {
-      if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-
-        if (error) {
-          if (error.message.includes("Email not confirmed")) {
-            toast.error("Please check your email and confirm your account before logging in");
-          } else if (error.message.includes("Invalid login credentials")) {
-            toast.error("Invalid email or password");
-          } else {
-            toast.error(error.message);
-          }
-          return;
-        }
-
-        toast.success("Successfully logged in!");
-        navigate("/dashboard");
-      } else {
-        const { error: signUpError, data } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-
-        if (signUpError) {
-          if (signUpError.message.includes("User already registered")) {
-            toast.error("An account with this email already exists. Please try logging in instead.");
-            setIsLogin(true);
-          } else {
-            toast.error(signUpError.message);
-          }
-          return;
-        }
-
-        if (data.user) {
-          let avatarUrl = null;
-          if (avatar) {
-            const fileExt = avatar.name.split('.').pop();
-            const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
-
-            const { error: uploadError } = await supabase.storage
-              .from('avatars')
-              .upload(filePath, avatar);
-
-            if (uploadError) {
-              toast.error("Error uploading avatar");
-              return;
-            }
-
-            const { data: { publicUrl } } = supabase.storage
-              .from('avatars')
-              .getPublicUrl(filePath);
-
-            avatarUrl = publicUrl;
-          }
-
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({
-              avatar_url: avatarUrl,
-              company_website: website,
-              role: role,
-              onboarding_completed: true,
-            })
-            .eq('id', data.user.id);
-
-          if (profileError) {
-            toast.error("Error updating profile");
+          if (uploadError) {
+            console.error("Avatar upload error:", uploadError);
+            toast.error("Error uploading avatar");
             return;
           }
+
+          const { data: { publicUrl } } = supabase.storage
+            .from('avatars')
+            .getPublicUrl(filePath);
+
+          avatarUrl = publicUrl;
         }
 
-        toast.success("Registration successful! Please check your email for confirmation.");
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            avatar_url: avatarUrl,
+            company_website: website,
+            role: role,
+            onboarding_completed: true,
+          })
+          .eq('id', data.user.id);
+
+        if (profileError) {
+          console.error("Profile update error:", profileError);
+          toast.error("Error updating profile");
+          return;
+        }
       }
+
+      toast.success("Registration successful! Please check your email for confirmation.");
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      console.error("Registration error:", error);
+      toast.error(error.message || "An error occurred during registration");
     } finally {
       setLoading(false);
     }
@@ -148,34 +109,14 @@ export const AuthForm = () => {
           </CardHeader>
           <CardContent>
             {isForgotPassword ? (
-              <form onSubmit={handlePasswordReset} className="space-y-4">
-                <FormInput
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <div className="space-y-2">
-                  <Button 
-                    type="submit" 
-                    className="w-full" 
-                    disabled={loading}
-                  >
-                    Send Reset Instructions
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    className="w-full"
-                    onClick={() => setIsForgotPassword(false)}
-                  >
-                    Back to Login
-                  </Button>
-                </div>
-              </form>
+              <PasswordResetForm onBack={() => setIsForgotPassword(false)} />
+            ) : isLogin ? (
+              <LoginForm
+                onToggleMode={() => setIsLogin(false)}
+                onForgotPassword={() => setIsForgotPassword(true)}
+              />
             ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleRegistration} className="space-y-4">
                 <FormInput
                   type="email"
                   placeholder="Email"
@@ -192,36 +133,31 @@ export const AuthForm = () => {
                   required
                 />
 
-                {!isLogin && (
-                  <RegistrationFields
-                    website={website}
-                    setWebsite={setWebsite}
-                    role={role}
-                    setRole={setRole}
-                    onAvatarChange={(e) => {
-                      if (e.target.files && e.target.files[0]) {
-                        setAvatar(e.target.files[0]);
-                      }
-                    }}
-                  />
-                )}
+                <RegistrationFields
+                  website={website}
+                  setWebsite={setWebsite}
+                  role={role}
+                  setRole={setRole}
+                  onAvatarChange={(e) => {
+                    if (e.target.files && e.target.files[0]) {
+                      setAvatar(e.target.files[0]);
+                    }
+                  }}
+                />
 
-                {isLogin && (
+                <div className="space-y-2">
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? "Registering..." : "Register"}
+                  </Button>
                   <Button
                     type="button"
-                    variant="ghost"
-                    className="w-full text-sm text-muted-foreground hover:text-primary"
-                    onClick={() => setIsForgotPassword(true)}
+                    variant="outline"
+                    className="w-full"
+                    onClick={() => setIsLogin(true)}
                   >
-                    Forgot Password?
+                    Already have an account? Sign in
                   </Button>
-                )}
-
-                <FormFooter
-                  isLogin={isLogin}
-                  loading={loading}
-                  onToggleMode={() => setIsLogin(!isLogin)}
-                />
+                </div>
               </form>
             )}
           </CardContent>
