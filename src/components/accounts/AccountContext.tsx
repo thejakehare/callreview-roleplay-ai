@@ -16,6 +16,14 @@ interface AccountContextType {
   switchAccount: (accountId: string) => void;
 }
 
+interface AccountMemberResponse {
+  account: {
+    id: string;
+    name: string;
+  };
+  role: string;
+}
+
 const AccountContext = createContext<AccountContextType | undefined>(undefined);
 
 export const useAccounts = () => {
@@ -44,8 +52,8 @@ export const AccountProvider = ({ children }: { children: React.ReactNode }) => 
 
       if (error) throw error;
 
-      // Properly format the accounts data
-      const formattedAccounts = data.map((item) => ({
+      // Properly format the accounts data with type assertion
+      const formattedAccounts = (data as AccountMemberResponse[]).map((item) => ({
         id: item.account.id,
         name: item.account.name,
         role: item.role,
