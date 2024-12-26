@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import { FormInput } from "./FormInput";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { XCircle } from "lucide-react";
 
 export const LoginForm = ({
   onToggleMode,
@@ -15,11 +17,13 @@ export const LoginForm = ({
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError(null);
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -28,14 +32,15 @@ export const LoginForm = ({
       });
 
       if (error) {
-        if (error.message.includes("Email not confirmed")) {
+        console.error("Login error:", error);
+        
+        if (error.message.includes("Invalid login credentials")) {
+          setError("No account found with this email. Please check your email or sign up for a new account.");
+        } else if (error.message.includes("Email not confirmed")) {
           toast.error("Please check your email and confirm your account before logging in");
-        } else if (error.message.includes("Invalid login credentials")) {
-          toast.error("Invalid email or password. Please check your credentials and try again.");
         } else {
           toast.error(error.message);
         }
-        console.error("Login error:", error);
         return;
       }
 
@@ -51,6 +56,13 @@ export const LoginForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && (
+        <Alert variant="destructive" className="mb-4">
+          <XCircle className="h-4 w-4" />
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+      
       <FormInput
         type="email"
         placeholder="Email"
