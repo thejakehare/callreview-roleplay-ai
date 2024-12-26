@@ -28,23 +28,23 @@ export const SetupAccount = () => {
     setLoading(true);
     
     try {
-      // Create the account with the current user as owner
+      console.log('Creating account with owner_id:', session.user.id);
+      
       const { data: account, error: accountError } = await supabase
         .from('accounts')
-        .insert([
-          { 
-            name: accountName, 
-            owner_id: session.user.id 
-          }
-        ])
+        .insert({
+          name: accountName,
+          owner_id: session.user.id,
+        })
         .select()
         .single();
 
-      if (accountError) throw accountError;
+      if (accountError) {
+        console.error('Account creation error:', accountError);
+        throw accountError;
+      }
 
-      // Account member creation is handled by the database trigger
-      // that ensures the owner is added as an admin
-
+      console.log('Account created successfully:', account);
       toast.success('Account created successfully');
       navigate('/dashboard');
     } catch (error: any) {
