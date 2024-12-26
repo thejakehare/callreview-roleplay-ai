@@ -61,7 +61,7 @@ serve(async (req) => {
         Authorization: `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "Lovable <onboarding@resend.dev>",
+        from: "Lovable <no-reply@updates.roleplaybot.com>",
         to: [inviteeEmail],
         subject: `You've been invited to join ${accountName}`,
         html: `
