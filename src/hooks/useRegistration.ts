@@ -28,7 +28,7 @@ export const useRegistration = () => {
         hasAvatar: !!avatar
       });
 
-      const { error: signUpError, data } = await supabase.auth.signUp({
+      const signUpResponse = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -41,68 +41,51 @@ export const useRegistration = () => {
         },
       });
 
-      console.log("Registration response:", { data, error: signUpError });
-
-      if (signUpError) {
-        if (signUpError.message.includes("User already registered") || 
-            (typeof signUpError === 'object' && 
-             'body' in signUpError && 
-             typeof signUpError.body === 'string' && 
-             signUpError.body.includes("user_already_exists"))) {
+      if (signUpResponse.error) {
+        console.error("Registration error:", signUpResponse.error);
+        if (signUpResponse.error.message.includes("User already registered")) {
           toast.error("An account with this email already exists. Please try logging in instead.");
           return false;
-        } else {
-          console.error("Registration error:", signUpError);
-          // Log the full error object for debugging
-          console.error("Full error details:", {
-            message: signUpError.message,
-            status: signUpError.status,
-            name: signUpError.name,
-            stack: signUpError.stack,
-            details: signUpError
-          });
-          toast.error(signUpError.message);
-          return false;
         }
+        toast.error(signUpResponse.error.message);
+        return false;
       }
 
-      if (data.user) {
-        console.log("User created successfully:", data.user);
-        
-        let avatarUrl = null;
-        if (avatar) {
-          console.log("Uploading avatar...");
-          const fileExt = avatar.name.split('.').pop();
-          const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
+      const { data: { user } } = signUpResponse;
+      
+      if (!user) {
+        console.error("No user returned from signup");
+        toast.error("Registration failed. Please try again.");
+        return false;
+      }
 
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, avatar);
+      console.log("User created successfully:", user);
+      
+      if (avatar) {
+        console.log("Uploading avatar...");
+        const fileExt = avatar.name.split('.').pop();
+        const filePath = `${user.id}-${Math.random()}.${fileExt}`;
 
-          if (uploadError) {
-            console.error("Avatar upload error:", uploadError);
-            toast.error("Error uploading avatar");
-            return false;
-          }
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, avatar);
 
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-          avatarUrl = publicUrl;
-          console.log("Avatar uploaded successfully:", avatarUrl);
+        if (uploadError) {
+          console.error("Avatar upload error:", uploadError);
+          toast.error("Error uploading avatar");
+          return false;
         }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath);
 
         const { error: profileError } = await supabase
           .from('profiles')
           .update({
-            avatar_url: avatarUrl,
-            role: role,
-            first_name: firstName,
-            last_name: lastName,
-            onboarding_completed: true,
+            avatar_url: publicUrl,
           })
-          .eq('id', data.user.id);
+          .eq('id', user.id);
 
         if (profileError) {
           console.error("Profile update error:", profileError);
@@ -110,27 +93,20 @@ export const useRegistration = () => {
           return false;
         }
 
-        console.log("Profile updated successfully");
-        toast.success("Registration successful! Please check your email for confirmation.");
-        navigate("/dashboard");
-        return true;
+        console.log("Avatar uploaded successfully:", publicUrl);
       }
+
+      toast.success("Registration successful! Please check your email for confirmation.");
+      navigate("/dashboard");
+      return true;
+
     } catch (error: any) {
       console.error("Registration error:", error);
-      // Log the full error object for debugging
-      console.error("Full error details:", {
-        message: error.message,
-        status: error.status,
-        name: error.name,
-        stack: error.stack,
-        details: error
-      });
       toast.error(error.message || "An error occurred during registration");
       return false;
     } finally {
       setLoading(false);
     }
-    return false;
   };
 
   return {
