@@ -40,9 +40,25 @@ export const useProfileData = () => {
       if (data) {
         setWebsite(data.company_website || "");
         setRole(data.role || "");
-        setAvatarUrl(data.avatar_url);
         setFirstName(data.first_name || "");
         setLastName(data.last_name || "");
+        
+        // If there's an avatar_url, ensure it's a valid URL
+        if (data.avatar_url) {
+          try {
+            // Validate if it's already a full URL
+            new URL(data.avatar_url);
+            setAvatarUrl(data.avatar_url);
+          } catch {
+            // If it's not a full URL, get the public URL from storage
+            const { data: publicUrl } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(data.avatar_url);
+            setAvatarUrl(publicUrl.publicUrl);
+          }
+        } else {
+          setAvatarUrl(null);
+        }
       }
     } catch (error) {
       console.error("Unexpected error:", error);
@@ -99,7 +115,7 @@ export const useProfileData = () => {
 
       const { error: updateError } = await supabase
         .from('profiles')
-        .update({ avatar_url: publicUrl })
+        .update({ avatar_url: filePath })
         .eq('id', session.user.id);
 
       if (updateError) throw updateError;
