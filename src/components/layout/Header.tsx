@@ -37,10 +37,7 @@ const Header = () => {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage
-                      src={avatarUrl || undefined}
-                      alt={email || ""}
-                    />
+                    <AvatarImage src={avatarUrl || ""} alt={email || ""} />
                     <AvatarFallback>
                       {email ? email[0].toUpperCase() : "?"}
                     </AvatarFallback>
