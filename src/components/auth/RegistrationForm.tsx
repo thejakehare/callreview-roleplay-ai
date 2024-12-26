@@ -1,52 +1,47 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
-import { RegistrationFields } from "./RegistrationFields";
-import { useRegistration } from "@/hooks/useRegistration";
+import { AuthFields } from "./AuthFields";
+import { useState } from "react";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
 interface RegistrationFormProps {
   onBack: () => void;
 }
 
 export const RegistrationForm = ({ onBack }: RegistrationFormProps) => {
-  const {
-    firstName,
-    setFirstName,
-    lastName,
-    setLastName,
-    accountName,
-    setAccountName,
-    loading,
-    avatar,
-    setAvatar,
-    role,
-    setRole,
-    email,
-    setEmail,
-    password,
-    setPassword,
-    handleRegistration,
-  } = useRegistration();
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleRegistration = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (error) {
+      console.error("Registration error:", error);
+      if (error.message.includes("User already registered")) {
+        toast.error("An account with this email already exists. Please try logging in instead.");
+      } else {
+        toast.error(error.message);
+      }
+    }
+
+    setLoading(false);
+  };
 
   return (
     <form onSubmit={handleRegistration} className="space-y-4">
-      <RegistrationFields
-        firstName={firstName}
-        setFirstName={setFirstName}
-        lastName={lastName}
-        setLastName={setLastName}
-        accountName={accountName}
-        setAccountName={setAccountName}
-        role={role}
-        setRole={setRole}
+      <AuthFields
         email={email}
         setEmail={setEmail}
         password={password}
         setPassword={setPassword}
-        onAvatarChange={(e) => {
-          if (e.target.files && e.target.files[0]) {
-            setAvatar(e.target.files[0]);
-          }
-        }}
       />
 
       <div className="space-y-2">

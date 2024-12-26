@@ -7,6 +7,8 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
 import { SessionDetails } from "@/pages/SessionDetails";
 import { AcceptInvitation } from "@/components/invitations/AcceptInvitation";
+import { SetupProfile } from "@/pages/SetupProfile";
+import { SetupAccount } from "@/pages/SetupAccount";
 import Home from "@/pages/Home";
 import Header from "@/components/layout/Header";
 
@@ -22,10 +24,26 @@ const App = () => {
           path="/auth"
           element={
             session ? (
-              <Navigate to="/dashboard" replace />
+              <Navigate to="/setup-profile" replace />
             ) : (
               <AuthForm />
             )
+          }
+        />
+        <Route
+          path="/setup-profile"
+          element={
+            <ProtectedRoute>
+              <SetupProfile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/setup-account"
+          element={
+            <ProtectedRoute>
+              <SetupAccount />
+            </ProtectedRoute>
           }
         />
         <Route
