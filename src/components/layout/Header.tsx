@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useProfileData } from "@/hooks/useProfileData";
 import { LogOut, User } from "lucide-react";
+import { AccountSwitcher } from "@/components/accounts/AccountSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +40,7 @@ const Header = () => {
       <div className="container flex h-14 items-center">
         <MainNav />
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <AccountSwitcher />
           <div className="w-full flex justify-end">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
