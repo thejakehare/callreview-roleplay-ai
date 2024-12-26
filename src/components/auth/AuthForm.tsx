@@ -6,9 +6,11 @@ import { toast } from "sonner";
 import { FormInput } from "./FormInput";
 import { RegistrationFields } from "./RegistrationFields";
 import { FormFooter } from "./FormFooter";
+import { Button } from "@/components/ui/button";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(false);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -24,6 +26,29 @@ export const AuthForm = () => {
       }
     });
   }, [navigate]);
+
+  const handlePasswordReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      toast.success("Password reset instructions sent to your email!");
+      setIsForgotPassword(false);
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -118,47 +143,87 @@ export const AuthForm = () => {
         <Card className="w-[400px] bg-card border-0">
           <CardHeader>
             <CardTitle className="text-foreground text-center">
-              {isLogin ? "Login" : "Register"}
+              {isForgotPassword ? "Reset Password" : (isLogin ? "Login" : "Register")}
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <FormInput
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-              
-              <FormInput
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-
-              {!isLogin && (
-                <RegistrationFields
-                  website={website}
-                  setWebsite={setWebsite}
-                  role={role}
-                  setRole={setRole}
-                  onAvatarChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setAvatar(e.target.files[0]);
-                    }
-                  }}
+            {isForgotPassword ? (
+              <form onSubmit={handlePasswordReset} className="space-y-4">
+                <FormInput
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
                 />
-              )}
+                <div className="space-y-2">
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    disabled={loading}
+                  >
+                    Send Reset Instructions
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full"
+                    onClick={() => setIsForgotPassword(false)}
+                  >
+                    Back to Login
+                  </Button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <FormInput
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+                
+                <FormInput
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
 
-              <FormFooter
-                isLogin={isLogin}
-                loading={loading}
-                onToggleMode={() => setIsLogin(!isLogin)}
-              />
-            </form>
+                {!isLogin && (
+                  <RegistrationFields
+                    website={website}
+                    setWebsite={setWebsite}
+                    role={role}
+                    setRole={setRole}
+                    onAvatarChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setAvatar(e.target.files[0]);
+                      }
+                    }}
+                  />
+                )}
+
+                {isLogin && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="w-full text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => setIsForgotPassword(true)}
+                  >
+                    Forgot Password?
+                  </Button>
+                )}
+
+                <FormFooter
+                  isLogin={isLogin}
+                  loading={loading}
+                  onToggleMode={() => setIsLogin(!isLogin)}
+                />
+              </form>
+            )}
           </CardContent>
         </Card>
       </div>
