@@ -39,7 +39,7 @@ export const InvitationForm = () => {
         .eq('role', 'admin');
 
       if (error) throw error;
-      return data as AdminAccount[];
+      return (data || []) as AdminAccount[];
     },
   });
 
