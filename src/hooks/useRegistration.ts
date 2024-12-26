@@ -19,16 +19,7 @@ export const useRegistration = () => {
     setLoading(true);
 
     try {
-      console.log("Starting registration with data:", {
-        email,
-        firstName,
-        lastName,
-        accountName,
-        role,
-        hasAvatar: !!avatar
-      });
-
-      const signUpResponse = await supabase.auth.signUp({
+      const signupPayload = {
         email,
         password,
         options: {
@@ -39,7 +30,11 @@ export const useRegistration = () => {
             role: role
           },
         },
-      });
+      };
+
+      console.log("Signup payload:", JSON.stringify(signupPayload, null, 2));
+
+      const signUpResponse = await supabase.auth.signUp(signupPayload);
 
       if (signUpResponse.error) {
         console.error("Registration error:", signUpResponse.error);
