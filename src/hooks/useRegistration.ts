@@ -56,21 +56,31 @@ export const useRegistration = () => {
 
       console.log("User created successfully:", user);
 
-      // Wait for profile to be created (give the trigger time to execute)
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer for profile to be created (increased from 1s to 2s)
+      console.log("Waiting for profile creation...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Verify profile was created
+      console.log("Verifying profile creation for user:", user.id);
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
 
-      if (profileError || !profile) {
-        console.error("Profile verification failed:", profileError);
+      if (profileError) {
+        console.error("Profile verification error:", profileError);
+        toast.error("Error verifying profile. Please try again.");
+        return false;
+      }
+
+      if (!profile) {
+        console.error("No profile found after creation");
         toast.error("Error creating profile. Please try again.");
         return false;
       }
+
+      console.log("Profile verified successfully:", profile);
       
       if (avatar) {
         console.log("Uploading avatar...");
@@ -109,9 +119,11 @@ export const useRegistration = () => {
 
       toast.success("Registration successful! Please check your email for confirmation.");
       
-      // Wait a bit longer to ensure account creation trigger has completed
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Wait longer to ensure account creation trigger has completed (increased from 1s to 2s)
+      console.log("Waiting for account creation...");
+      await new Promise(resolve => setTimeout(resolve, 2000));
       
+      console.log("Registration process completed, navigating to dashboard");
       navigate("/dashboard");
       return true;
 
