@@ -19,22 +19,29 @@ export const useRegistration = () => {
     setLoading(true);
 
     try {
-      const signupPayload = {
+      // Create the user metadata object
+      const userMetadata = {
+        first_name: firstName,
+        last_name: lastName,
+        account_name: accountName,
+        role: role,
+      };
+
+      console.log("Signup payload:", {
         email,
         password,
         options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            account_name: accountName,
-            role: role
-          },
+          data: userMetadata,
         },
-      };
+      });
 
-      console.log("Signup payload:", JSON.stringify(signupPayload, null, 2));
-
-      const signUpResponse = await supabase.auth.signUp(signupPayload);
+      const signUpResponse = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: userMetadata,
+        },
+      });
 
       if (signUpResponse.error) {
         console.error("Registration error:", signUpResponse.error);
@@ -117,9 +124,9 @@ export const useRegistration = () => {
         console.log("Avatar uploaded successfully:", publicUrl);
       }
 
-      toast.success("Registration successful! Please check your email for confirmation.");
+      toast.success("Registration successful!");
       
-      // Wait longer to ensure account creation trigger has completed (increased from 1s to 2s)
+      // Wait longer to ensure account creation trigger has completed
       console.log("Waiting for account creation...");
       await new Promise(resolve => setTimeout(resolve, 2000));
       
