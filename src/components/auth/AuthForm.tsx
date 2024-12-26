@@ -8,6 +8,7 @@ import { RegistrationFields } from "./RegistrationFields";
 import { LoginForm } from "./LoginForm";
 import { PasswordResetForm } from "./PasswordResetForm";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -149,14 +150,14 @@ export const AuthForm = () => {
                   <Button type="submit" className="w-full" disabled={loading}>
                     {loading ? "Registering..." : "Register"}
                   </Button>
-                  <Button
+                  <button
                     type="button"
-                    variant="outline"
-                    className="w-full"
+                    className="flex items-center justify-center gap-2 w-full text-primary hover:text-primary/90 text-sm"
                     onClick={() => setIsLogin(true)}
                   >
-                    Already have an account? Sign in
-                  </Button>
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to login
+                  </button>
                 </div>
               </form>
             )}
