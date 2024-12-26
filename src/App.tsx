@@ -6,6 +6,7 @@ import { RoleplaySession } from "@/components/roleplay/RoleplaySession";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
 import { SessionDetails } from "@/pages/SessionDetails";
+import { AcceptInvitation } from "@/components/invitations/AcceptInvitation";
 import Home from "@/pages/Home";
 import Header from "@/components/layout/Header";
 
@@ -59,6 +60,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+        <Route path="/accept-invitation" element={<AcceptInvitation />} />
         {/* Catch all route - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
