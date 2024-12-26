@@ -8,39 +8,50 @@ import { ProfileForm } from "@/components/profile/ProfileForm";
 
 export const Profile = () => {
   const { session } = useAuth();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [website, setWebsite] = useState("");
   const [role, setRole] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     const getProfile = async () => {
-      if (!session?.user.id) return;
+      try {
+        setLoading(true);
+        
+        if (!session?.user.id) {
+          console.error("No user ID found in session");
+          return;
+        }
 
-      console.log("Fetching profile for user:", session.user.id);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .maybeSingle();
+        console.log("Fetching profile for user:", session.user.id);
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('company_website, role, avatar_url')
+          .eq('id', session.user.id)
+          .single();
 
-      if (error) {
-        console.error("Error fetching profile:", error);
-        toast.error('Error loading profile');
-        return;
-      }
+        if (error) {
+          console.error("Error fetching profile:", error);
+          toast.error('Error loading profile');
+          return;
+        }
 
-      if (data) {
-        console.log("Profile data received:", data);
-        setWebsite(data.company_website || "");
-        setRole(data.role || "");
-        setAvatarUrl(data.avatar_url);
-      } else {
-        console.log("No profile found for user:", session.user.id);
-        // Initialize with empty values if no profile exists
-        setWebsite("");
-        setRole("");
-        setAvatarUrl(null);
+        if (data) {
+          console.log("Profile data received:", data);
+          setWebsite(data.company_website || "");
+          setRole(data.role || "");
+          setAvatarUrl(data.avatar_url);
+        } else {
+          console.log("No profile found for user:", session.user.id);
+          setWebsite("");
+          setRole("");
+          setAvatarUrl(null);
+        }
+      } catch (error) {
+        console.error("Unexpected error:", error);
+        toast.error('An unexpected error occurred');
+      } finally {
+        setLoading(false);
       }
     };
 
