@@ -22,11 +22,17 @@ export const AuthForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    supabase.auth.onAuthStateChange((event, session) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       if (session?.user) {
         navigate("/dashboard");
       }
     });
+
+    return () => {
+      if (authListener?.subscription) {
+        authListener.subscription.unsubscribe();
+      }
+    };
   }, [navigate]);
 
   const handleRegistration = async (e: React.FormEvent) => {
@@ -93,9 +99,10 @@ export const AuthForm = () => {
           toast.error("Error updating profile");
           return;
         }
-      }
 
-      toast.success("Registration successful! Please check your email for confirmation.");
+        toast.success("Registration successful! Please check your email for confirmation.");
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.error(error.message || "An error occurred during registration");
