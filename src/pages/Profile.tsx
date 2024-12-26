@@ -22,7 +22,7 @@ export const Profile = () => {
         .from('profiles')
         .select('*')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -35,6 +35,12 @@ export const Profile = () => {
         setWebsite(data.company_website || "");
         setRole(data.role || "");
         setAvatarUrl(data.avatar_url);
+      } else {
+        console.log("No profile found for user:", session.user.id);
+        // Initialize with empty values if no profile exists
+        setWebsite("");
+        setRole("");
+        setAvatarUrl(null);
       }
     };
 
