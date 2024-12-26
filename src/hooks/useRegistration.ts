@@ -23,11 +23,7 @@ export const useRegistration = () => {
       const userMetadata = {
         first_name: firstName,
         last_name: lastName,
-        account_name: accountName || undefined,
         role: role,
-        email: email,
-        email_verified: true,
-        phone_verified: false,
       };
 
       console.log("Starting registration process with metadata:", userMetadata);
