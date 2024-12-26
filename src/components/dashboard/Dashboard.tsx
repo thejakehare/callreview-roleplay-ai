@@ -1,21 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Play, History, UserPlus } from "lucide-react";
+import { Play, History, UserPlus, Building } from "lucide-react";
 import { SessionHistory } from "@/components/history/SessionHistory";
 import { SessionFavorites } from "@/components/favorites/SessionFavorites";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { InvitationForm } from "@/components/invitations/InvitationForm";
+import { CreateAccountForm } from "@/components/accounts/CreateAccountForm";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const [showHistory, setShowHistory] = useState(false);
+  const [createAccountOpen, setCreateAccountOpen] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
       <div className="container mx-auto py-12 px-4 space-y-8 flex-grow">
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-6 gap-4">
+          <Dialog open={createAccountOpen} onOpenChange={setCreateAccountOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline">
+                <Building className="mr-2 h-4 w-4" />
+                Create New Account
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Create New Account</DialogTitle>
+              </DialogHeader>
+              <CreateAccountForm onSuccess={() => setCreateAccountOpen(false)} />
+            </DialogContent>
+          </Dialog>
+
           <Dialog>
             <DialogTrigger asChild>
               <Button variant="outline">
