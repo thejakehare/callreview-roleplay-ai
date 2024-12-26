@@ -15,9 +15,11 @@ export const AuthForm = () => {
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [accountName, setAccountName] = useState("");
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
-  const [website, setWebsite] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
@@ -43,10 +45,16 @@ export const AuthForm = () => {
       const { error: signUpError, data } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            first_name: firstName,
+            last_name: lastName,
+            account_name: accountName,
+          },
+        },
       });
 
       if (signUpError) {
-        // Check if the error is due to an existing user
         if (signUpError.message.includes("User already registered") || 
             (typeof signUpError === 'object' && 
              'body' in signUpError && 
@@ -88,8 +96,9 @@ export const AuthForm = () => {
           .from('profiles')
           .update({
             avatar_url: avatarUrl,
-            company_website: website,
             role: role,
+            first_name: firstName,
+            last_name: lastName,
             onboarding_completed: true,
           })
           .eq('id', data.user.id);
@@ -147,8 +156,12 @@ export const AuthForm = () => {
                 />
 
                 <RegistrationFields
-                  website={website}
-                  setWebsite={setWebsite}
+                  firstName={firstName}
+                  setFirstName={setFirstName}
+                  lastName={lastName}
+                  setLastName={setLastName}
+                  accountName={accountName}
+                  setAccountName={setAccountName}
                   role={role}
                   setRole={setRole}
                   onAvatarChange={(e) => {

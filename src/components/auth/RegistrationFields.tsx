@@ -1,19 +1,27 @@
 import { FormInput } from "./FormInput";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Camera, Link, Users } from "lucide-react";
+import { Camera, User, Users } from "lucide-react";
 import { roleDisplayNames } from "@/utils/roleUtils";
 
 interface RegistrationFieldsProps {
-  website: string;
-  setWebsite: (value: string) => void;
+  firstName: string;
+  setFirstName: (value: string) => void;
+  lastName: string;
+  setLastName: (value: string) => void;
+  accountName: string;
+  setAccountName: (value: string) => void;
   role: string;
   setRole: (value: string) => void;
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const RegistrationFields = ({
-  website,
-  setWebsite,
+  firstName,
+  setFirstName,
+  lastName,
+  setLastName,
+  accountName,
+  setAccountName,
   role,
   setRole,
   onAvatarChange,
@@ -30,12 +38,32 @@ export const RegistrationFields = ({
       />
 
       <FormInput
-        type="url"
-        label="Company Website"
-        placeholder="https://example.com"
-        value={website}
-        onChange={(e) => setWebsite(e.target.value)}
-        icon={Link}
+        type="text"
+        label="First Name"
+        placeholder="Enter your first name"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        icon={User}
+        required
+      />
+
+      <FormInput
+        type="text"
+        label="Last Name"
+        placeholder="Enter your last name"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        icon={User}
+        required
+      />
+
+      <FormInput
+        type="text"
+        label="Account Name (Optional)"
+        placeholder="Enter your account name"
+        value={accountName}
+        onChange={(e) => setAccountName(e.target.value)}
+        icon={Users}
       />
 
       <div className="space-y-2">
