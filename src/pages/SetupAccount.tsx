@@ -30,21 +30,19 @@ export const SetupAccount = () => {
     try {
       console.log('Creating account with owner_id:', session.user.id);
       
-      const { data: account, error: accountError } = await supabase
+      const { error: accountError } = await supabase
         .from('accounts')
         .insert({
           name: accountName,
           owner_id: session.user.id,
-        })
-        .select()
-        .single();
+        });
 
       if (accountError) {
         console.error('Account creation error:', accountError);
         throw accountError;
       }
 
-      console.log('Account created successfully:', account);
+      console.log('Account created successfully');
       toast.success('Account created successfully');
       navigate('/dashboard');
     } catch (error: any) {
