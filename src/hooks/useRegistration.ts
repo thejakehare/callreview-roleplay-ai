@@ -69,7 +69,7 @@ export const useRegistration = () => {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (profileError) {
         console.error("Profile verification error:", profileError);
