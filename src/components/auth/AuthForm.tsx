@@ -12,13 +12,17 @@ export const AuthForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("AuthForm mounted");
     const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", { event, session });
       if (session?.user) {
+        console.log("Valid session detected, navigating to dashboard");
         navigate("/dashboard");
       }
     });
 
     return () => {
+      console.log("AuthForm unmounting, cleaning up listener");
       if (authListener?.subscription) {
         authListener.subscription.unsubscribe();
       }

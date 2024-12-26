@@ -22,6 +22,7 @@ export const LoginForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Login attempt started for email:", email);
     setLoading(true);
     setError(null);
 
@@ -31,8 +32,10 @@ export const LoginForm = ({
         password,
       });
 
+      console.log("Login response:", { data, error: signInError });
+
       if (signInError) {
-        console.error("Login error:", signInError);
+        console.error("Login error details:", signInError);
         
         if (signInError.message.includes("Invalid login credentials")) {
           setError("Unable to find a user with that email. Please try again.");
@@ -45,11 +48,12 @@ export const LoginForm = ({
       }
 
       if (data?.user) {
+        console.log("Login successful, user:", data.user);
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       }
     } catch (error: any) {
-      console.error("Login error:", error);
+      console.error("Unexpected login error:", error);
       setError(error.message || "An error occurred during login");
     } finally {
       setLoading(false);
