@@ -15,6 +15,13 @@ export const AccountManagement = () => {
   const fetchAccounts = async () => {
     try {
       console.log("Fetching accounts...");
+      const { data: user } = await supabase.auth.getUser();
+      
+      if (!user.user?.id) {
+        console.error("No user found");
+        return;
+      }
+
       const { data, error } = await supabase
         .from("accounts")
         .select(`
@@ -25,7 +32,7 @@ export const AccountManagement = () => {
             user_id
           )
         `)
-        .eq('account_members.user_id', (await supabase.auth.getUser()).data.user?.id)
+        .eq('account_members.user_id', user.user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -35,7 +42,14 @@ export const AccountManagement = () => {
       }
 
       console.log("Fetched accounts:", data);
-      setAccounts(data || []);
+      // Transform the data to match the Account type
+      const transformedAccounts: Account[] = data?.map(({ id, name, created_at }) => ({
+        id,
+        name,
+        created_at,
+      })) || [];
+
+      setAccounts(transformedAccounts);
     } catch (error) {
       console.error("Error:", error);
       toast.error("An error occurred while loading accounts");
