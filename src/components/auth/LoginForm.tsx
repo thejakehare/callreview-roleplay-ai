@@ -26,7 +26,7 @@ export const LoginForm = ({
     setError(null);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
@@ -35,20 +35,22 @@ export const LoginForm = ({
         console.error("Login error:", signInError);
         
         if (signInError.message.includes("Invalid login credentials")) {
-          setError("No account found with this email. Please check your email or sign up for a new account.");
+          setError("Invalid email or password. Please check your credentials or sign up for a new account.");
         } else if (signInError.message.includes("Email not confirmed")) {
-          toast.error("Please check your email and confirm your account before logging in");
+          setError("Please check your email and confirm your account before logging in.");
         } else {
-          toast.error(signInError.message);
+          setError(signInError.message);
         }
         return;
       }
 
-      toast.success("Successfully logged in!");
-      navigate("/dashboard");
+      if (data?.user) {
+        toast.success("Successfully logged in!");
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       console.error("Login error:", error);
-      toast.error(error.message || "An error occurred during login");
+      setError(error.message || "An error occurred during login");
     } finally {
       setLoading(false);
     }
