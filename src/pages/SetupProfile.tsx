@@ -26,25 +26,38 @@ export const SetupProfile = () => {
     }
 
     setLoading(true);
-    const success = await profileApi.createProfile(session.user.id, {
-      role,
-      first_name: firstName,
-      last_name: lastName,
-    });
-    
-    if (success) {
-      toast.success("Profile created successfully");
-      navigate("/setup-account");
+    try {
+      const success = await profileApi.createProfile(session.user.id, {
+        role,
+        first_name: firstName,
+        last_name: lastName,
+      });
+      
+      if (success) {
+        toast.success("Profile created successfully");
+        navigate("/setup-account");
+      }
+    } catch (error) {
+      console.error('Error creating profile:', error);
+      toast.error("Failed to create profile. Please try again.");
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleAvatarUpload = async (file: File) => {
     if (!session?.user.id) return;
     
     setLoading(true);
-    await profileApi.uploadAvatar(session.user.id, file);
-    setLoading(false);
+    try {
+      await profileApi.uploadAvatar(session.user.id, file);
+      toast.success("Avatar uploaded successfully");
+    } catch (error) {
+      console.error('Error uploading avatar:', error);
+      toast.error("Failed to upload avatar");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
