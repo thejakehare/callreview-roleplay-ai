@@ -13,6 +13,11 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 
+type FavoriteWithSession = {
+  session_id: string;
+  sessions: Tables<"sessions">;
+}
+
 export const SessionFavorites = () => {
   const [favorites, setFavorites] = useState<Tables<"sessions">[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +39,7 @@ export const SessionFavorites = () => {
             session_id,
             sessions (*)
           `)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false }) as { data: FavoriteWithSession[] | null, error: any };
 
         if (error) {
           console.error("Error fetching favorites:", error);
@@ -42,7 +47,7 @@ export const SessionFavorites = () => {
           return;
         }
 
-        // Extract the sessions from the joined query
+        // Extract the sessions from the joined query and ensure proper typing
         const favoriteSessions = data?.map(f => f.sessions) || [];
         setFavorites(favoriteSessions);
       } catch (error) {
