@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 import { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
 import {
@@ -11,6 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export const SessionHistory = () => {
   const [sessions, setSessions] = useState<Tables<"sessions">[]>([]);
@@ -18,25 +19,50 @@ export const SessionHistory = () => {
 
   useEffect(() => {
     const fetchSessions = async () => {
-      const { data, error } = await supabase
-        .from("sessions")
-        .select("*")
-        .order("created_at", { ascending: false });
+      try {
+        // First check if we have an authenticated user
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          toast.error("Please login to view your sessions");
+          setLoading(false);
+          return;
+        }
 
-      if (error) {
-        console.error("Error fetching sessions:", error);
-        return;
+        const { data, error } = await supabase
+          .from("sessions")
+          .select("*")
+          .order("created_at", { ascending: false });
+
+        if (error) {
+          console.error("Error fetching sessions:", error);
+          toast.error("Failed to load sessions");
+          return;
+        }
+
+        setSessions(data || []);
+      } catch (error) {
+        console.error("Error:", error);
+        toast.error("An error occurred while loading sessions");
+      } finally {
+        setLoading(false);
       }
-
-      setSessions(data || []);
-      setLoading(false);
     };
 
     fetchSessions();
   }, []);
 
   if (loading) {
-    return <div className="text-foreground">Loading...</div>;
+    return (
+      <Card className="w-full bg-card border-0">
+        <CardHeader>
+          <CardTitle className="text-2xl text-primary">Session History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-4 text-muted-foreground">Loading...</div>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
