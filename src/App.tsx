@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard/Dashboard";
 import { RoleplaySession } from "@/components/roleplay/RoleplaySession";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
+import { SessionDetails } from "@/pages/SessionDetails";
 import Home from "@/pages/Home";
 import { Header } from "@/components/layout/Header";
 
@@ -47,6 +48,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <Profile />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/session/:id"
+          element={
+            <ProtectedRoute>
+              <SessionDetails />
             </ProtectedRoute>
           }
         />

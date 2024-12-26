@@ -12,15 +12,16 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 export const SessionHistory = () => {
   const [sessions, setSessions] = useState<Tables<"sessions">[]>([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSessions = async () => {
       try {
-        // First check if we have an authenticated user
         const { data: { user } } = await supabase.auth.getUser();
         
         if (!user) {
@@ -85,7 +86,8 @@ export const SessionHistory = () => {
               {sessions.map((session) => (
                 <TableRow 
                   key={session.id}
-                  className="border-b border-accent hover:bg-accent/50"
+                  className="border-b border-accent hover:bg-accent/50 cursor-pointer"
+                  onClick={() => navigate(`/session/${session.id}`)}
                 >
                   <TableCell className="text-foreground">
                     {format(new Date(session.created_at), "PPp")}
