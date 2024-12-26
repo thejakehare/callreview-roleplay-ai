@@ -8,6 +8,14 @@ import { toast } from "sonner";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query";
 
+type AdminAccount = {
+  account_id: string;
+  accounts: {
+    id: string;
+    name: string;
+  };
+};
+
 export const InvitationForm = () => {
   const [email, setEmail] = useState("");
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
@@ -15,7 +23,7 @@ export const InvitationForm = () => {
   const { session } = useAuth();
 
   // Fetch accounts where the user is an admin
-  const { data: adminAccounts, isLoading: loadingAccounts } = useQuery({
+  const { data: adminAccounts, isLoading: loadingAccounts } = useQuery<AdminAccount[]>({
     queryKey: ['adminAccounts'],
     queryFn: async () => {
       const { data, error } = await supabase
