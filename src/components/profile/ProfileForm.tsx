@@ -1,17 +1,15 @@
 import { FormInput } from "@/components/auth/FormInput";
-import { Link, User, Globe, Briefcase } from "lucide-react";
+import { User, Globe, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { roleDisplayNames } from "@/utils/roleUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ProfileFormProps {
-  website: string;
   role: string;
   firstName: string;
   lastName: string;
   loading: boolean;
   onResetPassword: () => void;
-  onWebsiteChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFirstNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLastNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRoleChange: (value: string) => void;
@@ -20,13 +18,11 @@ interface ProfileFormProps {
 }
 
 export const ProfileForm = ({ 
-  website, 
   role,
   firstName,
   lastName, 
   loading, 
   onResetPassword,
-  onWebsiteChange,
   onFirstNameChange,
   onLastNameChange,
   onRoleChange,
@@ -76,15 +72,6 @@ export const ProfileForm = ({
         value={lastName}
         onChange={onLastNameChange}
         icon={User}
-      />
-
-      <FormInput
-        type="url"
-        label="Company Website"
-        placeholder="https://example.com"
-        value={website}
-        onChange={onWebsiteChange}
-        icon={Globe}
       />
 
       <div className="space-y-2">

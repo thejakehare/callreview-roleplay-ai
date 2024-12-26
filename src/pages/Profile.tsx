@@ -8,12 +8,10 @@ export const Profile = () => {
   const { session } = useAuth();
   const {
     loading,
-    website,
     role,
     firstName,
     lastName,
     avatarUrl,
-    setWebsite,
     setRole,
     setFirstName,
     setLastName,
@@ -34,13 +32,11 @@ export const Profile = () => {
             email={session?.user.email || ""} 
           />
           <ProfileForm
-            website={website}
             role={role}
             firstName={firstName}
             lastName={lastName}
             loading={loading}
             onResetPassword={handleResetPassword}
-            onWebsiteChange={(e) => setWebsite(e.target.value)}
             onFirstNameChange={(e) => setFirstName(e.target.value)}
             onLastNameChange={(e) => setLastName(e.target.value)}
             onRoleChange={setRole}
