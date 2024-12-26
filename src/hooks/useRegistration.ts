@@ -55,6 +55,22 @@ export const useRegistration = () => {
       }
 
       console.log("User created successfully:", user);
+
+      // Wait for profile to be created (give the trigger time to execute)
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Verify profile was created
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (profileError || !profile) {
+        console.error("Profile verification failed:", profileError);
+        toast.error("Error creating profile. Please try again.");
+        return false;
+      }
       
       if (avatar) {
         console.log("Uploading avatar...");
@@ -92,6 +108,10 @@ export const useRegistration = () => {
       }
 
       toast.success("Registration successful! Please check your email for confirmation.");
+      
+      // Wait a bit longer to ensure account creation trigger has completed
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
       navigate("/dashboard");
       return true;
 
