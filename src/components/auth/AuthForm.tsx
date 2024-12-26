@@ -2,24 +2,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
-import { toast } from "sonner";
-import { RegistrationFields } from "./RegistrationFields";
+import { RegistrationForm } from "./RegistrationForm";
 import { LoginForm } from "./LoginForm";
 import { PasswordResetForm } from "./PasswordResetForm";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [accountName, setAccountName] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [avatar, setAvatar] = useState<File | null>(null);
-  const [role, setRole] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -35,89 +24,6 @@ export const AuthForm = () => {
       }
     };
   }, [navigate]);
-
-  const handleRegistration = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    try {
-      const { error: signUpError, data } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            first_name: firstName,
-            last_name: lastName,
-            account_name: accountName,
-          },
-        },
-      });
-
-      if (signUpError) {
-        if (signUpError.message.includes("User already registered") || 
-            (typeof signUpError === 'object' && 
-             'body' in signUpError && 
-             typeof signUpError.body === 'string' && 
-             signUpError.body.includes("user_already_exists"))) {
-          toast.error("An account with this email already exists. Please try logging in instead.");
-          setIsLogin(true);
-        } else {
-          console.error("Registration error:", signUpError);
-          toast.error(signUpError.message);
-        }
-        return;
-      }
-
-      if (data.user) {
-        let avatarUrl = null;
-        if (avatar) {
-          const fileExt = avatar.name.split('.').pop();
-          const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, avatar);
-
-          if (uploadError) {
-            console.error("Avatar upload error:", uploadError);
-            toast.error("Error uploading avatar");
-            return;
-          }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-          avatarUrl = publicUrl;
-        }
-
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            avatar_url: avatarUrl,
-            role: role,
-            first_name: firstName,
-            last_name: lastName,
-            onboarding_completed: true,
-          })
-          .eq('id', data.user.id);
-
-        if (profileError) {
-          console.error("Profile update error:", profileError);
-          toast.error("Error updating profile");
-          return;
-        }
-
-        toast.success("Registration successful! Please check your email for confirmation.");
-        navigate("/dashboard");
-      }
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      toast.error(error.message || "An error occurred during registration");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-background">
@@ -137,41 +43,7 @@ export const AuthForm = () => {
                 onForgotPassword={() => setIsForgotPassword(true)}
               />
             ) : (
-              <form onSubmit={handleRegistration} className="space-y-4">
-                <RegistrationFields
-                  firstName={firstName}
-                  setFirstName={setFirstName}
-                  lastName={lastName}
-                  setLastName={setLastName}
-                  accountName={accountName}
-                  setAccountName={setAccountName}
-                  role={role}
-                  setRole={setRole}
-                  email={email}
-                  setEmail={setEmail}
-                  password={password}
-                  setPassword={setPassword}
-                  onAvatarChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setAvatar(e.target.files[0]);
-                    }
-                  }}
-                />
-
-                <div className="space-y-2">
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Registering..." : "Register"}
-                  </Button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-2 w-full text-primary hover:text-primary/90 text-sm"
-                    onClick={() => setIsLogin(true)}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to login
-                  </button>
-                </div>
-              </form>
+              <RegistrationForm onBack={() => setIsLogin(true)} />
             )}
           </CardContent>
         </Card>
