@@ -3,7 +3,6 @@ import { supabase } from "@/lib/supabase";
 import { Account } from "@/types/account";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { CreateAccountDialog } from "@/components/accounts/CreateAccountDialog";
 import { AccountList } from "@/components/accounts/AccountList";
@@ -13,26 +12,41 @@ export const AccountManagement = () => {
   const [loading, setLoading] = useState(true);
   const [showCreateDialog, setShowCreateDialog] = useState(false);
 
-  useEffect(() => {
-    fetchAccounts();
-  }, []);
-
   const fetchAccounts = async () => {
     try {
+      console.log("Fetching accounts...");
       const { data, error } = await supabase
-        .from('accounts')
-        .select('*')
+        .from("accounts")
+        .select(`
+          id,
+          name,
+          created_at,
+          account_members!inner (
+            user_id
+          )
+        `)
+        .eq('account_members.user_id', (await supabase.auth.getUser()).data.user?.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching accounts:", error);
+        toast.error("Failed to load accounts");
+        return;
+      }
+
+      console.log("Fetched accounts:", data);
       setAccounts(data || []);
-    } catch (error: any) {
-      toast.error('Error fetching accounts');
-      console.error('Error:', error);
+    } catch (error) {
+      console.error("Error:", error);
+      toast.error("An error occurred while loading accounts");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchAccounts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-background p-8">
