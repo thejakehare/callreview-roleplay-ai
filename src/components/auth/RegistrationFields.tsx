@@ -1,7 +1,8 @@
+import { Camera } from "lucide-react";
 import { FormInput } from "./FormInput";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Camera, User, Users, Info } from "lucide-react";
-import { roleDisplayNames } from "@/utils/roleUtils";
+import { UserInfoFields } from "./UserInfoFields";
+import { RoleSelector } from "./RoleSelector";
+import { AuthFields } from "./AuthFields";
 
 interface RegistrationFieldsProps {
   firstName: string;
@@ -45,76 +46,22 @@ export const RegistrationFields = ({
         value=""
       />
 
-      <FormInput
-        type="text"
-        label="First Name"
-        placeholder="Enter your first name"
-        value={firstName}
-        onChange={(e) => setFirstName(e.target.value)}
-        icon={User}
-        required
+      <UserInfoFields
+        firstName={firstName}
+        setFirstName={setFirstName}
+        lastName={lastName}
+        setLastName={setLastName}
+        accountName={accountName}
+        setAccountName={setAccountName}
       />
 
-      <FormInput
-        type="text"
-        label="Last Name"
-        placeholder="Enter your last name"
-        value={lastName}
-        onChange={(e) => setLastName(e.target.value)}
-        icon={User}
-        required
-      />
+      <RoleSelector role={role} setRole={setRole} />
 
-      <FormInput
-        type="text"
-        label="Account Name (Optional)"
-        placeholder="Enter your account name"
-        value={accountName}
-        onChange={(e) => setAccountName(e.target.value)}
-        icon={Users}
-      />
-
-      <div className="space-y-2">
-        <label className="flex items-center gap-2 text-sm text-foreground">
-          <Users className="h-4 w-4" />
-          Role
-        </label>
-        <Select value={role} onValueChange={setRole}>
-          <SelectTrigger className="bg-secondary border-0 text-foreground">
-            <SelectValue placeholder="Select your role">
-              {role ? roleDisplayNames[role] : "Select your role"}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent className="bg-[#222222] border-0">
-            {Object.entries(roleDisplayNames).map(([value, label]) => (
-              <SelectItem 
-                key={value} 
-                value={value} 
-                className="focus:bg-[#333333] cursor-pointer"
-              >
-                {label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <FormInput
-        type="email"
-        label="Email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-
-      <FormInput
-        type="password"
-        label="Password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
+      <AuthFields
+        email={email}
+        setEmail={setEmail}
+        password={password}
+        setPassword={setPassword}
       />
     </>
   );
