@@ -7,6 +7,15 @@ import { toast } from "sonner";
 import { CreateAccountDialog } from "@/components/accounts/CreateAccountDialog";
 import { AccountList } from "@/components/accounts/AccountList";
 
+interface AccountWithMembers {
+  id: string;
+  name: string;
+  created_at: string;
+  account_members: {
+    user_id: string;
+  }[];
+}
+
 export const AccountManagement = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,8 +51,9 @@ export const AccountManagement = () => {
       }
 
       console.log("Fetched accounts:", data);
+      
       // Transform the data to match the Account type
-      const transformedAccounts: Account[] = data?.map(({ id, name, created_at }) => ({
+      const transformedAccounts: Account[] = (data as AccountWithMembers[])?.map(({ id, name, created_at }) => ({
         id,
         name,
         created_at,
