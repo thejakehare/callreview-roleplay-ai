@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { FormInput } from "./FormInput";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { XCircle } from "lucide-react";
+import { LoginErrorDisplay } from "./LoginErrorDisplay";
+import { LoginFormFields } from "./LoginFormFields";
+import { FormFooter } from "./FormFooter";
 
 export const LoginForm = ({
   onToggleMode,
@@ -58,27 +58,13 @@ export const LoginForm = ({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {error && (
-        <Alert variant="destructive" className="mb-4">
-          <XCircle className="h-4 w-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
+      <LoginErrorDisplay error={error} />
       
-      <FormInput
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-      />
-      
-      <FormInput
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
+      <LoginFormFields
+        email={email}
+        password={password}
+        onEmailChange={(e) => setEmail(e.target.value)}
+        onPasswordChange={(e) => setPassword(e.target.value)}
       />
 
       <Button
@@ -90,19 +76,11 @@ export const LoginForm = ({
         Forgot Password?
       </Button>
 
-      <div className="space-y-2">
-        <Button type="submit" className="w-full" disabled={loading}>
-          {loading ? "Signing in..." : "Sign In"}
-        </Button>
-        <Button
-          type="button"
-          variant="outline"
-          className="w-full"
-          onClick={onToggleMode}
-        >
-          Don't have an account? Sign up
-        </Button>
-      </div>
+      <FormFooter
+        isLogin={true}
+        loading={loading}
+        onToggleMode={onToggleMode}
+      />
     </form>
   );
 };
