@@ -44,8 +44,8 @@ export const InvitationForm = () => {
       return (data || []).map(item => ({
         account_id: item.account_id,
         accounts: {
-          id: item.accounts.id,
-          name: item.accounts.name
+          id: item.accounts.id as string,
+          name: item.accounts.name as string
         }
       }));
     },
