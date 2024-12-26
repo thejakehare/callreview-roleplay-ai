@@ -12,9 +12,18 @@ export const useProfileData = () => {
   const [lastName, setLastName] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    getProfile();
-  }, [session?.user.id]);
+  const createProfile = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .insert([{ id: userId }]);
+
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Error creating profile:", error);
+      toast.error('Error creating profile');
+    }
+  };
 
   const getProfile = async () => {
     try {
@@ -29,12 +38,30 @@ export const useProfileData = () => {
         .from('profiles')
         .select('company_website, role, avatar_url, first_name, last_name')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
-        console.error("Error fetching profile:", error);
-        toast.error('Error loading profile');
-        return;
+        if (error.code === 'PGRST116') {
+          // Profile doesn't exist, create it
+          await createProfile(session.user.id);
+          // Retry fetching the profile
+          const { data: retryData, error: retryError } = await supabase
+            .from('profiles')
+            .select('company_website, role, avatar_url, first_name, last_name')
+            .eq('id', session.user.id)
+            .maybeSingle();
+
+          if (retryError) throw retryError;
+          if (retryData) {
+            setWebsite(retryData.company_website || "");
+            setRole(retryData.role || "");
+            setFirstName(retryData.first_name || "");
+            setLastName(retryData.last_name || "");
+            setAvatarUrl(retryData.avatar_url);
+          }
+          return;
+        }
+        throw error;
       }
 
       if (data) {
@@ -43,14 +70,11 @@ export const useProfileData = () => {
         setFirstName(data.first_name || "");
         setLastName(data.last_name || "");
         
-        // If there's an avatar_url, ensure it's a valid URL
         if (data.avatar_url) {
           try {
-            // Validate if it's already a full URL
             new URL(data.avatar_url);
             setAvatarUrl(data.avatar_url);
           } catch {
-            // If it's not a full URL, get the public URL from storage
             const { data: publicUrl } = supabase.storage
               .from('avatars')
               .getPublicUrl(data.avatar_url);
@@ -61,12 +85,16 @@ export const useProfileData = () => {
         }
       }
     } catch (error) {
-      console.error("Unexpected error:", error);
-      toast.error('An unexpected error occurred');
+      console.error("Error fetching profile:", error);
+      toast.error('Error loading profile');
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    getProfile();
+  }, [session?.user.id]);
 
   const handleSave = async () => {
     try {
