@@ -52,8 +52,8 @@ export const AccountProvider = ({ children }: { children: React.ReactNode }) => 
 
       if (error) throw error;
 
-      // Properly format the accounts data with type assertion
-      const formattedAccounts = (data as AccountMemberResponse[]).map((item) => ({
+      // Transform the data to match our expected type
+      const formattedAccounts = (data || []).map((item: any) => ({
         id: item.account.id,
         name: item.account.name,
         role: item.role,
