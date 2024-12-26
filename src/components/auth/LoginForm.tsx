@@ -35,7 +35,7 @@ export const LoginForm = ({
         console.error("Login error:", signInError);
         
         if (signInError.message.includes("Invalid login credentials")) {
-          setError("Invalid email or password. Please check your credentials or sign up for a new account.");
+          setError("Unable to find a user with that email. Please try again.");
         } else if (signInError.message.includes("Email not confirmed")) {
           setError("Please check your email and confirm your account before logging in.");
         } else {
