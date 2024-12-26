@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Play, History } from "lucide-react";
 import { SessionHistory } from "@/components/history/SessionHistory";
+import { SessionFavorites } from "@/components/favorites/SessionFavorites";
 import { useState } from "react";
 
 export const Dashboard = () => {
@@ -45,8 +46,9 @@ export const Dashboard = () => {
           </Card>
         </div>
         {showHistory && (
-          <div className="mt-12">
+          <div className="grid md:grid-cols-2 gap-8 mt-12">
             <SessionHistory />
+            <SessionFavorites />
           </div>
         )}
       </div>
