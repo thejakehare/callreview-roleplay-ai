@@ -13,6 +13,7 @@ export const useProfileData = () => {
 
   const createProfile = async (userId: string) => {
     try {
+      console.log('Creating new profile for user:', userId);
       const { error } = await supabase
         .from('profiles')
         .insert([{ id: userId }]);
@@ -33,6 +34,7 @@ export const useProfileData = () => {
         return;
       }
 
+      console.log('Fetching profile for user:', session.user.id);
       const { data, error } = await supabase
         .from('profiles')
         .select('role, avatar_url, first_name, last_name')
@@ -40,7 +42,9 @@ export const useProfileData = () => {
         .maybeSingle();
 
       if (error) {
+        console.error('Error fetching profile:', error);
         if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating new profile');
           await createProfile(session.user.id);
           const { data: retryData, error: retryError } = await supabase
             .from('profiles')
@@ -48,8 +52,12 @@ export const useProfileData = () => {
             .eq('id', session.user.id)
             .maybeSingle();
 
-          if (retryError) throw retryError;
+          if (retryError) {
+            console.error('Error fetching profile after creation:', retryError);
+            throw retryError;
+          }
           if (retryData) {
+            console.log('Profile data after creation:', retryData);
             setRole(retryData.role || "");
             setFirstName(retryData.first_name || "");
             setLastName(retryData.last_name || "");
@@ -61,6 +69,7 @@ export const useProfileData = () => {
       }
 
       if (data) {
+        console.log('Profile data fetched:', data);
         setRole(data.role || "");
         setFirstName(data.first_name || "");
         setLastName(data.last_name || "");
@@ -78,6 +87,8 @@ export const useProfileData = () => {
         } else {
           setAvatarUrl(null);
         }
+      } else {
+        console.log('No profile data found');
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -88,15 +99,21 @@ export const useProfileData = () => {
   };
 
   useEffect(() => {
-    getProfile();
+    if (session?.user.id) {
+      getProfile();
+    }
   }, [session?.user.id]);
 
   const handleSave = async () => {
     try {
       setLoading(true);
       
-      if (!session?.user.id) return;
+      if (!session?.user.id) {
+        console.error("No user ID found in session");
+        return;
+      }
 
+      console.log('Updating profile with:', { role, firstName, lastName });
       const { error } = await supabase
         .from('profiles')
         .update({
@@ -109,8 +126,8 @@ export const useProfileData = () => {
       if (error) throw error;
       toast.success('Profile updated successfully');
     } catch (error: any) {
+      console.error('Error updating profile:', error);
       toast.error('Error updating profile');
-      console.error('Error:', error.message);
     } finally {
       setLoading(false);
     }
@@ -120,11 +137,15 @@ export const useProfileData = () => {
     try {
       setLoading(true);
       
-      if (!session?.user.id) return;
+      if (!session?.user.id) {
+        console.error("No user ID found in session");
+        return;
+      }
 
       const fileExt = file.name.split('.').pop();
       const filePath = `${session.user.id}-${Math.random()}.${fileExt}`;
 
+      console.log('Uploading avatar:', filePath);
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
@@ -135,6 +156,7 @@ export const useProfileData = () => {
         .from('avatars')
         .getPublicUrl(filePath);
 
+      console.log('Updating profile with new avatar:', filePath);
       const { error: updateError } = await supabase
         .from('profiles')
         .update({ avatar_url: filePath })
@@ -145,8 +167,8 @@ export const useProfileData = () => {
       setAvatarUrl(publicUrl);
       toast.success('Profile photo updated successfully');
     } catch (error: any) {
+      console.error('Error uploading profile photo:', error);
       toast.error('Error uploading profile photo');
-      console.error('Error:', error.message);
     } finally {
       setLoading(false);
     }
@@ -163,6 +185,7 @@ export const useProfileData = () => {
       if (error) throw error;
       toast.success("Password reset email sent!");
     } catch (error: any) {
+      console.error('Error resetting password:', error);
       toast.error(error.message);
     } finally {
       setLoading(false);
