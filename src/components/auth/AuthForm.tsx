@@ -3,7 +3,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
-import { FormInput } from "./FormInput";
 import { RegistrationFields } from "./RegistrationFields";
 import { LoginForm } from "./LoginForm";
 import { PasswordResetForm } from "./PasswordResetForm";
@@ -139,22 +138,6 @@ export const AuthForm = () => {
               />
             ) : (
               <form onSubmit={handleRegistration} className="space-y-4">
-                <FormInput
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                
-                <FormInput
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-
                 <RegistrationFields
                   firstName={firstName}
                   setFirstName={setFirstName}
@@ -164,6 +147,10 @@ export const AuthForm = () => {
                   setAccountName={setAccountName}
                   role={role}
                   setRole={setRole}
+                  email={email}
+                  setEmail={setEmail}
+                  password={password}
+                  setPassword={setPassword}
                   onAvatarChange={(e) => {
                     if (e.target.files && e.target.files[0]) {
                       setAvatar(e.target.files[0]);

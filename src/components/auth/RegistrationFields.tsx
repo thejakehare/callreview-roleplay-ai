@@ -12,6 +12,10 @@ interface RegistrationFieldsProps {
   setAccountName: (value: string) => void;
   role: string;
   setRole: (value: string) => void;
+  email: string;
+  setEmail: (value: string) => void;
+  password: string;
+  setPassword: (value: string) => void;
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -24,6 +28,10 @@ export const RegistrationFields = ({
   setAccountName,
   role,
   setRole,
+  email,
+  setEmail,
+  password,
+  setPassword,
   onAvatarChange,
 }: RegistrationFieldsProps) => {
   return (
@@ -90,6 +98,24 @@ export const RegistrationFields = ({
           </SelectContent>
         </Select>
       </div>
+
+      <FormInput
+        type="email"
+        label="Email"
+        placeholder="Enter your email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+
+      <FormInput
+        type="password"
+        label="Password"
+        placeholder="Enter your password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
     </>
   );
 };
