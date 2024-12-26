@@ -135,34 +135,28 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
-          company_website: string | null
           created_at: string
           first_name: string | null
           id: string
           last_name: string | null
-          onboarding_completed: boolean | null
           role: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
-          company_website?: string | null
           created_at?: string
           first_name?: string | null
           id: string
           last_name?: string | null
-          onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
-          company_website?: string | null
           created_at?: string
           first_name?: string | null
           id?: string
           last_name?: string | null
-          onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
         }
