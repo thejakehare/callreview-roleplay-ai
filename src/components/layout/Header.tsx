@@ -41,42 +41,40 @@ const Header = () => {
         <MainNav />
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
           <AccountSwitcher />
-          <div className="w-full flex justify-end">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  className="relative h-8 w-8 rounded-full"
-                >
-                  <Avatar className="h-8 w-8">
-                    <AvatarImage src={avatarUrl || ""} alt={email || ""} />
-                    <AvatarFallback>
-                      {email ? email[0].toUpperCase() : "?"}
-                    </AvatarFallback>
-                  </Avatar>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                className="w-48 bg-card border-border"
-                align="end"
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                className="relative h-8 w-8 rounded-full"
               >
-                <DropdownMenuItem
-                  className="hover:bg-accent focus:bg-accent"
-                  onClick={() => navigate("/profile")}
-                >
-                  <User className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  className="hover:bg-accent focus:bg-accent"
-                  onClick={handleSignOut}
-                >
-                  <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+                <Avatar className="h-8 w-8">
+                  <AvatarImage src={avatarUrl || ""} alt={email || ""} />
+                  <AvatarFallback>
+                    {email ? email[0].toUpperCase() : "?"}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-48 bg-card border-border"
+              align="end"
+            >
+              <DropdownMenuItem
+                className="hover:bg-accent focus:bg-accent"
+                onClick={() => navigate("/profile")}
+              >
+                <User className="mr-2 h-4 w-4" />
+                <span>Profile</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="hover:bg-accent focus:bg-accent"
+                onClick={handleSignOut}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
     </header>
