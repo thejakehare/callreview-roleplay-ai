@@ -17,15 +17,8 @@ interface TeamMember {
   role: string;
   profile: {
     email: string;
-  };
-}
-
-// Define the shape of the raw data from Supabase
-interface RawTeamMember {
-  id: string;
-  role: string;
-  profile: {
-    email: string;
+    first_name: string | null;
+    last_name: string | null;
   };
 }
 
@@ -44,21 +37,24 @@ export const TeamMembers = () => {
           .select(`
             id,
             role,
-            profile:user_id (
-              email
+            profile:profiles!account_members_user_id_fkey (
+              email:id(email),
+              first_name,
+              last_name
             )
           `)
           .eq('account_id', currentAccount.id);
 
         if (error) throw error;
-        
-        // Explicitly type the data and transform it
-        const rawMembers = data as RawTeamMember[];
-        const formattedMembers = rawMembers.map(member => ({
+
+        // Transform the data to match our interface
+        const formattedMembers = (data || []).map(member => ({
           id: member.id,
           role: member.role,
           profile: {
-            email: member.profile.email
+            email: member.profile.email[0]?.email || 'No email found',
+            first_name: member.profile.first_name,
+            last_name: member.profile.last_name
           }
         }));
 
@@ -83,6 +79,7 @@ export const TeamMembers = () => {
       <Table>
         <TableHeader>
           <TableRow>
+            <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
           </TableRow>
@@ -90,6 +87,11 @@ export const TeamMembers = () => {
         <TableBody>
           {members.map((member) => (
             <TableRow key={member.id}>
+              <TableCell>
+                {member.profile.first_name || member.profile.last_name ? 
+                  `${member.profile.first_name || ''} ${member.profile.last_name || ''}`.trim() : 
+                  'No name provided'}
+              </TableCell>
               <TableCell>{member.profile.email}</TableCell>
               <TableCell>
                 <Badge variant={member.role === 'admin' ? 'default' : 'secondary'}>
