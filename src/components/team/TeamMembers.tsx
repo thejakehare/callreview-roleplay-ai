@@ -37,8 +37,8 @@ export const TeamMembers = () => {
           .select(`
             id,
             role,
-            profile:profiles!account_members_user_id_fkey (
-              email:id(email),
+            profile:profiles(
+              id,
               first_name,
               last_name
             )
@@ -47,14 +47,25 @@ export const TeamMembers = () => {
 
         if (error) throw error;
 
+        // Get emails from auth.users for the profiles
+        const userIds = data?.map(member => member.profile?.id).filter(Boolean) || [];
+        const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
+        
+        if (userError) throw userError;
+
+        // Create a map of user IDs to emails
+        const userEmails = new Map(
+          userData.users.map(user => [user.id, user.email])
+        );
+
         // Transform the data to match our interface
         const formattedMembers = (data || []).map(member => ({
           id: member.id,
           role: member.role,
           profile: {
-            email: member.profile.email[0]?.email || 'No email found',
-            first_name: member.profile.first_name,
-            last_name: member.profile.last_name
+            email: userEmails.get(member.profile?.id) || 'No email found',
+            first_name: member.profile?.first_name || null,
+            last_name: member.profile?.last_name || null
           }
         }));
 
