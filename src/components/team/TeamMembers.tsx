@@ -20,6 +20,15 @@ interface TeamMember {
   };
 }
 
+// Define the shape of the raw data from Supabase
+interface RawTeamMember {
+  id: string;
+  role: string;
+  profile: {
+    email: string;
+  };
+}
+
 export const TeamMembers = () => {
   const { currentAccount } = useAccounts();
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -43,14 +52,15 @@ export const TeamMembers = () => {
 
         if (error) throw error;
         
-        // Transform the data to match our interface
-        const formattedMembers = data?.map(member => ({
+        // Explicitly type the data and transform it
+        const rawMembers = data as RawTeamMember[];
+        const formattedMembers = rawMembers.map(member => ({
           id: member.id,
           role: member.role,
           profile: {
             email: member.profile.email
           }
-        })) || [];
+        }));
 
         setMembers(formattedMembers);
       } catch (error) {
