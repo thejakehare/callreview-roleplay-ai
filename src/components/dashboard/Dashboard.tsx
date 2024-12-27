@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Play, History, UserPlus } from "lucide-react";
+import { Play, History, UserPlus, Users } from "lucide-react";
 import { SessionHistory } from "@/components/history/SessionHistory";
 import { SessionFavorites } from "@/components/favorites/SessionFavorites";
 import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { InvitationForm } from "@/components/invitations/InvitationForm";
+import { TeamMembers } from "@/components/team/TeamMembers";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
   const [showHistory, setShowHistory] = useState(false);
+  const [showTeam, setShowTeam] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -32,7 +34,7 @@ export const Dashboard = () => {
           </Dialog>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
           <Card 
             className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0" 
             onClick={() => navigate("/roleplay")}
@@ -48,6 +50,7 @@ export const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
+
           <Card 
             className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0"
             onClick={() => setShowHistory(!showHistory)}
@@ -63,12 +66,34 @@ export const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
+
+          <Card 
+            className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0"
+            onClick={() => setShowTeam(!showTeam)}
+          >
+            <CardHeader className="space-y-1">
+              <CardTitle className="flex items-center text-2xl text-primary">
+                <Users className="mr-3 h-6 w-6" /> Team Members
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground text-lg">
+                View and manage your team members and their roles
+              </p>
+            </CardContent>
+          </Card>
         </div>
         
         {showHistory && (
           <div className="grid md:grid-cols-2 gap-8 mt-12">
             <SessionHistory />
             <SessionFavorites />
+          </div>
+        )}
+
+        {showTeam && (
+          <div className="mt-12">
+            <TeamMembers />
           </div>
         )}
       </div>
