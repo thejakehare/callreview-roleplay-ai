@@ -14,10 +14,10 @@ import { toast } from "sonner";
 
 interface TeamMember {
   id: string;
-  user: {
+  role: string;
+  profile: {
     email: string;
   };
-  role: string;
 }
 
 export const TeamMembers = () => {
@@ -35,14 +35,24 @@ export const TeamMembers = () => {
           .select(`
             id,
             role,
-            user:user_id (
+            profile:user_id (
               email
             )
           `)
           .eq('account_id', currentAccount.id);
 
         if (error) throw error;
-        setMembers(data || []);
+        
+        // Transform the data to match our interface
+        const formattedMembers = data?.map(member => ({
+          id: member.id,
+          role: member.role,
+          profile: {
+            email: member.profile.email
+          }
+        })) || [];
+
+        setMembers(formattedMembers);
       } catch (error) {
         console.error('Error fetching team members:', error);
         toast.error('Failed to load team members');
@@ -70,7 +80,7 @@ export const TeamMembers = () => {
         <TableBody>
           {members.map((member) => (
             <TableRow key={member.id}>
-              <TableCell>{member.user.email}</TableCell>
+              <TableCell>{member.profile.email}</TableCell>
               <TableCell>
                 <Badge variant={member.role === 'admin' ? 'default' : 'secondary'}>
                   {member.role}
