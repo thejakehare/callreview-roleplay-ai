@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { User } from "@supabase/supabase-js";
 
 interface TeamMember {
   id: string;
@@ -20,6 +21,12 @@ interface TeamMember {
     first_name: string | null;
     last_name: string | null;
   };
+}
+
+interface ProfileData {
+  id: string;
+  first_name: string | null;
+  last_name: string | null;
 }
 
 export const TeamMembers = () => {
@@ -48,24 +55,24 @@ export const TeamMembers = () => {
         if (error) throw error;
 
         // Get emails from auth.users for the profiles
-        const userIds = data?.map(member => member.profile?.id).filter(Boolean) || [];
+        const userIds = data?.map(member => (member.profile as ProfileData)?.id).filter(Boolean) || [];
         const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
         
         if (userError) throw userError;
 
         // Create a map of user IDs to emails
-        const userEmails = new Map(
-          userData.users.map(user => [user.id, user.email])
+        const userEmails = new Map<string, string>(
+          (userData.users as User[]).map(user => [user.id, user.email || ''])
         );
 
         // Transform the data to match our interface
-        const formattedMembers = (data || []).map(member => ({
+        const formattedMembers: TeamMember[] = (data || []).map(member => ({
           id: member.id,
           role: member.role,
           profile: {
-            email: userEmails.get(member.profile?.id) || 'No email found',
-            first_name: member.profile?.first_name || null,
-            last_name: member.profile?.last_name || null
+            email: userEmails.get((member.profile as ProfileData)?.id) || 'No email found',
+            first_name: (member.profile as ProfileData)?.first_name || null,
+            last_name: (member.profile as ProfileData)?.last_name || null
           }
         }));
 
