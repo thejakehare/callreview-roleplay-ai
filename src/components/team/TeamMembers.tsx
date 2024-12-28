@@ -11,7 +11,6 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { User } from "@supabase/supabase-js";
 
 interface TeamMember {
   id: string;
@@ -67,15 +66,23 @@ export const TeamMembers = () => {
 
         if (profilesError) throw profilesError;
 
-        // Get emails from auth.users
-        const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
-        
-        if (userError) throw userError;
+        // Get emails using the edge function
+        const response = await fetch(`${supabase.supabaseUrl}/functions/v1/get-user-emails`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${supabase.supabaseKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userIds: typedMemberData.map(member => member.user_id)
+          })
+        });
 
-        // Create a map of user IDs to emails
-        const userEmails = new Map<string, string>(
-          (userData.users as User[]).map(user => [user.id, user.email || ''])
-        );
+        if (!response.ok) {
+          throw new Error('Failed to fetch user emails');
+        }
+
+        const userEmails = await response.json();
 
         // Create a map of user IDs to profiles for easier lookup
         const profileMap = new Map(
@@ -87,7 +94,7 @@ export const TeamMembers = () => {
           id: member.id,
           role: member.role,
           profile: {
-            email: userEmails.get(member.user_id) || 'No email found',
+            email: userEmails[member.user_id] || 'No email found',
             first_name: profileMap.get(member.user_id)?.first_name || null,
             last_name: profileMap.get(member.user_id)?.last_name || null
           }
