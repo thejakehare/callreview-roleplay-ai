@@ -81,15 +81,18 @@ export const RoleplaySession = () => {
 
   const saveSessionData = async (conversationData: any) => {
     try {
-      console.log("Saving session data:", conversationData);
+      console.log("Raw conversation data:", conversationData);
       if (!session?.user?.id || !currentSessionId) {
         console.error("No user ID or session ID found");
         return;
       }
 
       const duration = Math.round(conversationData.duration_seconds || 0);
+      console.log("Calculated duration:", duration);
       const summary = conversationData.summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
+
+      console.log("Data to be saved:", { duration, summary, feedback });
 
       const { error } = await supabase
         .from("sessions")
