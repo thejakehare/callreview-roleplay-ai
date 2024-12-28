@@ -90,8 +90,9 @@ export const RoleplaySession = () => {
       const duration = conversationData.duration_seconds;
       const summary = conversationData.analysis?.transcript_summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
+      const transcript = conversationData.transcript || "";
 
-      console.log("Data to be saved:", { duration, summary, feedback });
+      console.log("Data to be saved:", { duration, summary, feedback, transcript });
 
       const { error } = await supabase
         .from("sessions")
@@ -99,6 +100,7 @@ export const RoleplaySession = () => {
           duration,
           summary,
           feedback,
+          transcript,
         })
         .eq('id', currentSessionId);
 

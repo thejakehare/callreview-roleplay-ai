@@ -76,6 +76,7 @@ export type Database = {
           feedback: string | null
           id: string
           summary: string | null
+          transcript: string | null
           user_id: string
         }
         Insert: {
@@ -85,6 +86,7 @@ export type Database = {
           feedback?: string | null
           id?: string
           summary?: string | null
+          transcript?: string | null
           user_id: string
         }
         Update: {
@@ -94,6 +96,7 @@ export type Database = {
           feedback?: string | null
           id?: string
           summary?: string | null
+          transcript?: string | null
           user_id?: string
         }
         Relationships: []
