@@ -5,7 +5,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Clock, MessageSquare, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Clock, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
 export const SessionDetails = () => {
@@ -56,6 +56,8 @@ export const SessionDetails = () => {
     );
   }
 
+  const transcript = session.transcript ? JSON.parse(session.transcript) : [];
+
   return (
     <div className="container mx-auto py-12 px-4">
       <Button
@@ -76,7 +78,7 @@ export const SessionDetails = () => {
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2">
             <Card className="bg-accent/50 border-0">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
@@ -93,23 +95,16 @@ export const SessionDetails = () => {
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
                   <MessageSquare className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Summary</span>
+                  <span className="font-medium">Transcript</span>
                 </div>
-                <p className="mt-2 text-muted-foreground">
-                  {session.summary || "No summary available"}
-                </p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-accent/50 border-0">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2">
-                  <ThumbsUp className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Feedback</span>
+                <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
+                  {transcript.map((entry: any, index: number) => (
+                    <div key={index} className="border-b border-border pb-4 last:border-0">
+                      <p className="font-medium mb-1">{entry.role === "assistant" ? "AI" : "You"}</p>
+                      <p className="text-muted-foreground">{entry.content}</p>
+                    </div>
+                  ))}
                 </div>
-                <p className="mt-2 text-muted-foreground">
-                  {session.feedback || "No feedback available"}
-                </p>
               </CardContent>
             </Card>
           </div>
