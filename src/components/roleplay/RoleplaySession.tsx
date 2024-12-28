@@ -7,10 +7,6 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
 
-type EndSessionResult = {
-  conversationId: string;
-} | null;
-
 export const RoleplaySession = () => {
   const [isActive, setIsActive] = useState(false);
   const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
@@ -19,7 +15,8 @@ export const RoleplaySession = () => {
 
   const startSession = async () => {
     try {
-      const result = await conversation.startSession({
+      // The API returns the conversation ID directly as a string
+      const conversationId = await conversation.startSession({
         agentId: "XTS4FbykwXxtp9z1Ex9r",
       });
 
@@ -29,7 +26,7 @@ export const RoleplaySession = () => {
           .from("sessions")
           .insert({
             user_id: session.user.id,
-            conversation_id: result.conversationId,
+            conversation_id: conversationId,
           })
           .select()
           .single();
@@ -110,16 +107,29 @@ export const RoleplaySession = () => {
 
   const endSession = async () => {
     try {
-      const result = await conversation.endSession() as EndSessionResult;
-      
-      if (result?.conversationId) {
-        toast.loading("Processing conversation data...");
-        
-        const conversationData = await fetchConversationData(result.conversationId);
-        await saveSessionData(conversationData);
-      } else {
-        throw new Error("No conversation ID received");
+      // Get the current session's conversation_id from the database
+      if (!currentSessionId) {
+        throw new Error("No current session ID found");
       }
+
+      const { data: sessionData, error: sessionError } = await supabase
+        .from("sessions")
+        .select("conversation_id")
+        .eq("id", currentSessionId)
+        .single();
+
+      if (sessionError || !sessionData?.conversation_id) {
+        throw new Error("Failed to retrieve conversation ID");
+      }
+
+      // End the conversation with ElevenLabs
+      await conversation.endSession();
+      
+      toast.loading("Processing conversation data...");
+      
+      // Use the stored conversation_id to fetch the final data
+      const conversationData = await fetchConversationData(sessionData.conversation_id);
+      await saveSessionData(conversationData);
     } catch (error) {
       console.error("Error ending session:", error);
       toast.error("Failed to end session");
