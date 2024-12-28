@@ -16,8 +16,11 @@ export const ProfileAvatar = ({ avatarUrl, email }: ProfileAvatarProps) => {
               e.currentTarget.onerror = null; // Prevent infinite loop
               e.currentTarget.src = ''; // Clear the src
               e.currentTarget.style.display = 'none'; // Hide the img
-              e.currentTarget.parentElement?.classList.add('bg-primary/10'); // Add background color
-              e.currentTarget.parentElement?.textContent = email?.charAt(0).toUpperCase() || '?'; // Show fallback letter
+              const parent = e.currentTarget.parentElement;
+              if (parent) {
+                parent.classList.add('bg-primary/10');
+                parent.textContent = email?.charAt(0).toUpperCase() || '?';
+              }
             }}
           />
         ) : (
