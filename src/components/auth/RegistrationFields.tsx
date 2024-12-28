@@ -1,19 +1,15 @@
 import { FormInput } from "./FormInput";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Camera, Link, Users } from "lucide-react";
+import { Camera, Users } from "lucide-react";
 import { roleDisplayNames } from "@/utils/roleUtils";
 
 interface RegistrationFieldsProps {
-  website: string;
-  setWebsite: (value: string) => void;
   role: string;
   setRole: (value: string) => void;
   onAvatarChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const RegistrationFields = ({
-  website,
-  setWebsite,
   role,
   setRole,
   onAvatarChange,
@@ -27,15 +23,6 @@ export const RegistrationFields = ({
         onChange={onAvatarChange}
         icon={Camera}
         value=""
-      />
-
-      <FormInput
-        type="url"
-        label="Company Website"
-        placeholder="https://example.com"
-        value={website}
-        onChange={(e) => setWebsite(e.target.value)}
-        icon={Link}
       />
 
       <div className="space-y-2">

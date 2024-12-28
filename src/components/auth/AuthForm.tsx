@@ -17,7 +17,6 @@ export const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
-  const [website, setWebsite] = useState("");
   const [role, setRole] = useState("");
   const navigate = useNavigate();
 
@@ -77,9 +76,7 @@ export const AuthForm = () => {
           .from('profiles')
           .update({
             avatar_url: avatarUrl,
-            company_website: website,
             role: role,
-            onboarding_completed: true,
           })
           .eq('id', data.user.id);
 
@@ -135,8 +132,6 @@ export const AuthForm = () => {
                 />
 
                 <RegistrationFields
-                  website={website}
-                  setWebsite={setWebsite}
                   role={role}
                   setRole={setRole}
                   onAvatarChange={(e) => {
