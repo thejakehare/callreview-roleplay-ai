@@ -70,6 +70,7 @@ export type Database = {
       }
       sessions: {
         Row: {
+          conversation_id: string | null
           created_at: string
           duration: number | null
           feedback: string | null
@@ -78,6 +79,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          conversation_id?: string | null
           created_at?: string
           duration?: number | null
           feedback?: string | null
@@ -86,6 +88,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          conversation_id?: string | null
           created_at?: string
           duration?: number | null
           feedback?: string | null

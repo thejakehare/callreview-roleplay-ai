@@ -7,21 +7,40 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
 
-// Define the type for the end session result
 type EndSessionResult = {
   conversationId: string;
 } | null;
 
 export const RoleplaySession = () => {
   const [isActive, setIsActive] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
   const conversation = useConversation();
   const { session } = useAuth();
 
   const startSession = async () => {
     try {
-      await conversation.startSession({
+      const result = await conversation.startSession({
         agentId: "XTS4FbykwXxtp9z1Ex9r",
       });
+
+      // Create a new session record when starting
+      if (session?.user?.id) {
+        const { data, error } = await supabase
+          .from("sessions")
+          .insert({
+            user_id: session.user.id,
+            conversation_id: result.conversationId,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          throw error;
+        }
+
+        setCurrentSessionId(data.id);
+      }
+
       setIsActive(true);
     } catch (error) {
       console.error("Failed to start session:", error);
@@ -59,8 +78,8 @@ export const RoleplaySession = () => {
 
   const saveSessionData = async (conversationData: any) => {
     try {
-      if (!session?.user?.id) {
-        console.error("No user ID found");
+      if (!session?.user?.id || !currentSessionId) {
+        console.error("No user ID or session ID found");
         return;
       }
 
@@ -69,12 +88,14 @@ export const RoleplaySession = () => {
       const summary = conversationData.summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
 
-      const { error } = await supabase.from("sessions").insert({
-        user_id: session.user.id,
-        duration,
-        summary,
-        feedback,
-      });
+      const { error } = await supabase
+        .from("sessions")
+        .update({
+          duration,
+          summary,
+          feedback,
+        })
+        .eq('id', currentSessionId);
 
       if (error) {
         throw error;
@@ -89,18 +110,12 @@ export const RoleplaySession = () => {
 
   const endSession = async () => {
     try {
-      // Cast the result to our EndSessionResult type
       const result = await conversation.endSession() as EndSessionResult;
       
-      // Check if we have a conversation ID
       if (result?.conversationId) {
-        // First show a loading toast
         toast.loading("Processing conversation data...");
         
-        // Fetch the complete conversation data
         const conversationData = await fetchConversationData(result.conversationId);
-        
-        // Save the data to our database
         await saveSessionData(conversationData);
       } else {
         throw new Error("No conversation ID received");
@@ -110,6 +125,7 @@ export const RoleplaySession = () => {
       toast.error("Failed to end session");
     } finally {
       setIsActive(false);
+      setCurrentSessionId(null);
     }
   };
 
