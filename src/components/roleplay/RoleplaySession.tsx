@@ -3,10 +3,14 @@ import { Button } from "@/components/ui/button";
 import { useConversation } from "@11labs/react";
 import { Mic, MicOff } from "lucide-react";
 import { ScrollingPrompts } from "./ScrollingPrompts";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { toast } from "sonner";
 
 export const RoleplaySession = () => {
   const [isActive, setIsActive] = useState(false);
   const conversation = useConversation();
+  const { session } = useAuth();
 
   const startSession = async () => {
     try {
@@ -16,12 +20,45 @@ export const RoleplaySession = () => {
       setIsActive(true);
     } catch (error) {
       console.error("Failed to start session:", error);
+      toast.error("Failed to start session");
+    }
+  };
+
+  const saveSessionData = async (conversationData: any) => {
+    try {
+      if (!session?.user?.id) {
+        console.error("No user ID found");
+        return;
+      }
+
+      const { error } = await supabase.from("sessions").insert({
+        user_id: session.user.id,
+        duration: conversationData.metadata.call_duration_secs,
+        summary: conversationData.analysis.transcript_summary,
+        feedback: JSON.stringify(conversationData.metadata.feedback),
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast.success("Session saved successfully");
+    } catch (error) {
+      console.error("Error saving session:", error);
+      toast.error("Failed to save session");
     }
   };
 
   const endSession = async () => {
-    await conversation.endSession();
-    setIsActive(false);
+    try {
+      const conversationData = await conversation.endSession();
+      await saveSessionData(conversationData);
+    } catch (error) {
+      console.error("Error ending session:", error);
+      toast.error("Failed to end session");
+    } finally {
+      setIsActive(false);
+    }
   };
 
   useEffect(() => {
