@@ -4,7 +4,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { toast } from "sonner";
 
 export const useSessionHistory = () => {
-  const [sessions, setSessions] = useState<Tables<"sessions">[]>([]);
+  const [sessions, setSessions] = useState<(Tables<"sessions"> & { is_favorite?: boolean })[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -18,18 +18,40 @@ export const useSessionHistory = () => {
           return;
         }
 
-        const { data, error } = await supabase
+        // Fetch sessions
+        const { data: sessionsData, error: sessionsError } = await supabase
           .from("sessions")
           .select("*")
           .order("created_at", { ascending: false });
 
-        if (error) {
-          console.error("Error fetching sessions:", error);
+        if (sessionsError) {
+          console.error("Error fetching sessions:", sessionsError);
           toast.error("Failed to load sessions");
           return;
         }
 
-        setSessions(data || []);
+        // Fetch favorites for the current user
+        const { data: favoritesData, error: favoritesError } = await supabase
+          .from("favorites")
+          .select("session_id")
+          .eq("user_id", user.id);
+
+        if (favoritesError) {
+          console.error("Error fetching favorites:", favoritesError);
+          toast.error("Failed to load favorites");
+          return;
+        }
+
+        // Create a Set of favorite session IDs for efficient lookup
+        const favoriteSessionIds = new Set(favoritesData.map(f => f.session_id));
+
+        // Combine sessions with favorite information
+        const sessionsWithFavorites = sessionsData?.map(session => ({
+          ...session,
+          is_favorite: favoriteSessionIds.has(session.id)
+        })) || [];
+
+        setSessions(sessionsWithFavorites);
       } catch (error) {
         console.error("Error:", error);
         toast.error("An error occurred while loading sessions");

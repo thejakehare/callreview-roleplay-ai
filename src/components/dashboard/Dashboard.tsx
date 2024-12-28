@@ -1,19 +1,16 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Play, History } from "lucide-react";
+import { Play } from "lucide-react";
 import { SessionHistory } from "@/components/history/SessionHistory";
-import { SessionFavorites } from "@/components/favorites/SessionFavorites";
-import { useState } from "react";
 
 export const Dashboard = () => {
   const navigate = useNavigate();
-  const [showHistory, setShowHistory] = useState(false);
 
   return (
     <div className="flex min-h-screen flex-col">
       <div className="container mx-auto py-12 px-4 space-y-8 flex-grow">
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid md:grid-cols-1 gap-8">
           <Card 
             className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0" 
             onClick={() => navigate("/roleplay")}
@@ -29,28 +26,8 @@ export const Dashboard = () => {
               </p>
             </CardContent>
           </Card>
-          <Card 
-            className="hover:scale-105 transition-transform duration-200 cursor-pointer bg-card border-0"
-            onClick={() => setShowHistory(!showHistory)}
-          >
-            <CardHeader className="space-y-1">
-              <CardTitle className="flex items-center text-2xl text-primary">
-                <History className="mr-3 h-6 w-6" /> Session History
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground text-lg">
-                View your past roleplay sessions and track your progress
-              </p>
-            </CardContent>
-          </Card>
+          <SessionHistory />
         </div>
-        {showHistory && (
-          <div className="grid md:grid-cols-2 gap-8 mt-12">
-            <SessionHistory />
-            <SessionFavorites />
-          </div>
-        )}
       </div>
       <div className="flex items-center justify-center gap-2 p-4">
         <span className="text-muted-foreground">Powered by</span>
