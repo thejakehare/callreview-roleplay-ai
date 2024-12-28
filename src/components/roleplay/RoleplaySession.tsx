@@ -88,8 +88,7 @@ export const RoleplaySession = () => {
       }
 
       const duration = conversationData.duration_seconds;
-      console.log("Duration from API:", duration);
-      const summary = conversationData.summary || "";
+      const summary = conversationData.analysis?.transcript_summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
 
       console.log("Data to be saved:", { duration, summary, feedback });
