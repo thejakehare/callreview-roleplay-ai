@@ -1,8 +1,9 @@
+import { FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase";
 
-const Home = () => {
+const Home: FC = () => {
   const navigate = useNavigate();
 
   // Get public URL for the GIF
