@@ -73,24 +73,14 @@ export const SessionDetails = () => {
           <CardTitle className="text-2xl text-primary">
             Session Details
           </CardTitle>
-          <div className="text-sm text-muted-foreground">
-            {format(new Date(session.created_at), "PPp")}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>{format(new Date(session.created_at), "PPp")}</span>
+            <Clock className="h-4 w-4 text-primary" />
+            <span>{session.duration ? `${session.duration} minutes` : "N/A"}</span>
           </div>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card className="bg-accent/50 border-0">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2">
-                  <Clock className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Duration</span>
-                </div>
-                <p className="mt-2 text-muted-foreground">
-                  {session.duration ? `${session.duration} minutes` : "N/A"}
-                </p>
-              </CardContent>
-            </Card>
-
+          <div className="grid gap-6 md:grid-cols-1">
             <Card className="bg-accent/50 border-0">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
