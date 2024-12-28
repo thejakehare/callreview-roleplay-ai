@@ -87,8 +87,8 @@ export const RoleplaySession = () => {
         return;
       }
 
-      const duration = Math.round(conversationData.duration_seconds || 0);
-      console.log("Calculated duration:", duration);
+      const duration = conversationData.duration_seconds;
+      console.log("Duration from API:", duration);
       const summary = conversationData.summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
 
