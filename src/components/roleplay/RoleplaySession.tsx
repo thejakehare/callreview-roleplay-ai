@@ -87,6 +87,7 @@ export const RoleplaySession = () => {
         return;
       }
 
+      // Extract duration from metadata.call_duration_secs
       const duration = conversationData.metadata?.call_duration_secs;
       const summary = conversationData.analysis?.transcript_summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
