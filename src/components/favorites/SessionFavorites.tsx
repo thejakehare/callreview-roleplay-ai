@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
+import { FavoriteButton } from "./FavoriteButton";
 
 type FavoriteWithSession = {
   session_id: string;
@@ -47,7 +48,6 @@ export const SessionFavorites = () => {
           return;
         }
 
-        // Extract the sessions from the joined query and ensure proper typing
         const favoriteSessions = data?.map(f => f.sessions) || [];
         setFavorites(favoriteSessions);
       } catch (error) {
@@ -86,8 +86,7 @@ export const SessionFavorites = () => {
               <TableRow className="border-b border-accent hover:bg-accent/50">
                 <TableHead className="text-primary">Date</TableHead>
                 <TableHead className="text-primary">Duration</TableHead>
-                <TableHead className="text-primary">Summary</TableHead>
-                <TableHead className="text-primary">Feedback</TableHead>
+                <TableHead className="text-primary w-[50px]"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -102,13 +101,14 @@ export const SessionFavorites = () => {
                   <TableCell className="text-foreground">
                     {session.duration ? `${session.duration} minutes` : "N/A"}
                   </TableCell>
-                  <TableCell className="text-foreground">{session.summary || "No summary"}</TableCell>
-                  <TableCell className="text-foreground">{session.feedback || "No feedback"}</TableCell>
+                  <TableCell className="text-foreground">
+                    <FavoriteButton sessionId={session.id} initialFavorited={true} />
+                  </TableCell>
                 </TableRow>
               ))}
               {favorites.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={4} className="text-center text-muted-foreground">
+                  <TableCell colSpan={3} className="text-center text-muted-foreground">
                     No favorite sessions found
                   </TableCell>
                 </TableRow>

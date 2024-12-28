@@ -9,6 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 
 interface SessionHistoryTableProps {
   sessions: Tables<"sessions">[];
@@ -24,6 +25,7 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
           <TableRow className="border-b border-accent hover:bg-accent/50">
             <TableHead className="text-primary">Date</TableHead>
             <TableHead className="text-primary">Duration</TableHead>
+            <TableHead className="text-primary w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -39,11 +41,14 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
               <TableCell className="text-foreground">
                 {session.duration ? `${session.duration} minutes` : "N/A"}
               </TableCell>
+              <TableCell className="text-foreground">
+                <FavoriteButton sessionId={session.id} />
+              </TableCell>
             </TableRow>
           ))}
           {sessions.length === 0 && (
             <TableRow>
-              <TableCell colSpan={2} className="text-center text-muted-foreground">
+              <TableCell colSpan={3} className="text-center text-muted-foreground">
                 No sessions found
               </TableCell>
             </TableRow>
