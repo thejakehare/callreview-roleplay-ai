@@ -15,12 +15,12 @@ export const RoleplaySession = () => {
 
   const startSession = async () => {
     try {
-      // The API returns the conversation ID directly as a string
+      console.log("Starting new session...");
       const conversationId = await conversation.startSession({
         agentId: "XTS4FbykwXxtp9z1Ex9r",
       });
+      console.log("Received conversation ID:", conversationId);
 
-      // Create a new session record when starting
       if (session?.user?.id) {
         const { data, error } = await supabase
           .from("sessions")
@@ -34,7 +34,7 @@ export const RoleplaySession = () => {
         if (error) {
           throw error;
         }
-
+        console.log("Created session record:", data);
         setCurrentSessionId(data.id);
       }
 
@@ -47,11 +47,14 @@ export const RoleplaySession = () => {
 
   const fetchConversationData = async (conversationId: string) => {
     try {
+      console.log("Fetching conversation data for ID:", conversationId);
       const { data: { api_key }, error } = await supabase.functions.invoke('get-elevenlabs-key');
       
       if (error || !api_key) {
+        console.error("Failed to get API key:", error);
         throw new Error('Failed to get API key');
       }
+      console.log("Successfully retrieved API key");
 
       const response = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
@@ -63,10 +66,13 @@ export const RoleplaySession = () => {
       );
 
       if (!response.ok) {
+        console.error("ElevenLabs API error:", response.status, response.statusText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      console.log("Successfully fetched conversation data:", data);
+      return data;
     } catch (error) {
       console.error("Error fetching conversation data:", error);
       throw error;
@@ -75,12 +81,12 @@ export const RoleplaySession = () => {
 
   const saveSessionData = async (conversationData: any) => {
     try {
+      console.log("Saving session data:", conversationData);
       if (!session?.user?.id || !currentSessionId) {
         console.error("No user ID or session ID found");
         return;
       }
 
-      // Extract relevant data from the conversation
       const duration = Math.round(conversationData.duration_seconds || 0);
       const summary = conversationData.summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
@@ -95,9 +101,11 @@ export const RoleplaySession = () => {
         .eq('id', currentSessionId);
 
       if (error) {
+        console.error("Error updating session:", error);
         throw error;
       }
 
+      console.log("Session saved successfully");
       toast.success("Session saved successfully");
     } catch (error) {
       console.error("Error saving session:", error);
@@ -107,7 +115,7 @@ export const RoleplaySession = () => {
 
   const endSession = async () => {
     try {
-      // Get the current session's conversation_id from the database
+      console.log("Ending session...");
       if (!currentSessionId) {
         throw new Error("No current session ID found");
       }
@@ -119,15 +127,17 @@ export const RoleplaySession = () => {
         .single();
 
       if (sessionError || !sessionData?.conversation_id) {
+        console.error("Failed to retrieve conversation ID:", sessionError);
         throw new Error("Failed to retrieve conversation ID");
       }
 
-      // End the conversation with ElevenLabs
+      console.log("Retrieved conversation_id:", sessionData.conversation_id);
+      
       await conversation.endSession();
+      console.log("ElevenLabs session ended");
       
       toast.loading("Processing conversation data...");
       
-      // Use the stored conversation_id to fetch the final data
       const conversationData = await fetchConversationData(sessionData.conversation_id);
       await saveSessionData(conversationData);
     } catch (error) {
