@@ -12,7 +12,7 @@ import {
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
 
 interface SessionHistoryTableProps {
-  sessions: Tables<"sessions">[];
+  sessions: (Tables<"sessions"> & { is_favorite?: boolean })[];
 }
 
 export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
@@ -42,7 +42,10 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
                 {session.duration ? `${session.duration} minutes` : "N/A"}
               </TableCell>
               <TableCell className="text-foreground">
-                <FavoriteButton sessionId={session.id} />
+                <FavoriteButton 
+                  sessionId={session.id} 
+                  initialFavorited={session.is_favorite}
+                />
               </TableCell>
             </TableRow>
           ))}
