@@ -67,10 +67,10 @@ export const TeamMembers = () => {
         if (profilesError) throw profilesError;
 
         // Get emails using the edge function
-        const response = await fetch(`${supabase.supabaseUrl}/functions/v1/get-user-emails`, {
+        const response = await fetch("https://wivbfxjqydkozyvlabil.supabase.co/functions/v1/get-user-emails", {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${supabase.supabaseKey}`,
+            'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndpdmJmeGpxeWRrb3p5dmxhYmlsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDM0NzMzMzAsImV4cCI6MjAxOTA0OTMzMH0.qYnxbLkd5qQvMGzH3J_zrUGEhRKWVz_RrNQcAF-4WXs`,
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
