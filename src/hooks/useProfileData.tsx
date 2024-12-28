@@ -41,18 +41,25 @@ export const useProfileData = () => {
         setFirstName(data.first_name || "");
         setLastName(data.last_name || "");
         
-        // If there's an avatar_url, ensure it's a valid URL
         if (data.avatar_url) {
           try {
-            // Validate if it's already a full URL
+            // First try to parse it as a URL to check if it's already a full URL
             new URL(data.avatar_url);
             setAvatarUrl(data.avatar_url);
           } catch {
-            // If it's not a full URL, get the public URL from storage
-            const { data: publicUrl } = supabase.storage
+            // If it's not a valid URL, it's a storage path - get the public URL
+            const { data: { publicUrl } } = supabase.storage
               .from('avatars')
               .getPublicUrl(data.avatar_url);
-            setAvatarUrl(publicUrl.publicUrl);
+            
+            // Verify the URL is accessible
+            const img = new Image();
+            img.onload = () => setAvatarUrl(publicUrl);
+            img.onerror = () => {
+              console.error("Failed to load avatar image");
+              setAvatarUrl(null);
+            };
+            img.src = publicUrl;
           }
         } else {
           setAvatarUrl(null);
