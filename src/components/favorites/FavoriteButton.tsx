@@ -18,18 +18,29 @@ export const FavoriteButton = ({ sessionId, initialFavorited = false }: Favorite
     setIsLoading(true);
 
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        toast.error("Please login to favorite sessions");
+        return;
+      }
+
       if (isFavorited) {
         const { error } = await supabase
           .from("favorites")
           .delete()
-          .eq("session_id", sessionId);
+          .eq("session_id", sessionId)
+          .eq("user_id", user.id);
 
         if (error) throw error;
         toast.success("Removed from favorites");
       } else {
         const { error } = await supabase
           .from("favorites")
-          .insert({ session_id: sessionId });
+          .insert({ 
+            session_id: sessionId,
+            user_id: user.id  // Add the user_id when creating a favorite
+          });
 
         if (error) throw error;
         toast.success("Added to favorites");
