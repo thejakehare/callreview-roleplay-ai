@@ -26,11 +26,17 @@ export const RoleplaySession = () => {
 
   const fetchConversationData = async (conversationId: string) => {
     try {
+      const { data: { api_key }, error } = await supabase.functions.invoke('get-elevenlabs-key');
+      
+      if (error || !api_key) {
+        throw new Error('Failed to get API key');
+      }
+
       const response = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
         {
           headers: {
-            "xi-api-key": import.meta.env.VITE_ELEVENLABS_API_KEY,
+            "xi-api-key": api_key,
           },
         }
       );
