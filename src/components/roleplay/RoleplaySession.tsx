@@ -90,7 +90,8 @@ export const RoleplaySession = () => {
       const duration = conversationData.duration_seconds;
       const summary = conversationData.analysis?.transcript_summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
-      const transcript = conversationData.transcript || "";
+      // Convert transcript array to a string by stringifying it
+      const transcript = JSON.stringify(conversationData.transcript || []);
 
       console.log("Data to be saved:", { duration, summary, feedback, transcript });
 
