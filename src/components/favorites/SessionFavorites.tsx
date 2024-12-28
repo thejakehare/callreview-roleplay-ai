@@ -58,7 +58,30 @@ export const SessionFavorites = () => {
       }
     };
 
+    // Initial fetch
     fetchFavorites();
+
+    // Subscribe to changes in the favorites table
+    const channel = supabase
+      .channel('favorites_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'favorites'
+        },
+        () => {
+          // Refetch favorites when changes occur
+          fetchFavorites();
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   if (loading) {
