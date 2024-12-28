@@ -17,7 +17,7 @@ export const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
-  const [role, setRole] = useState("");
+  const [role, setRole] = useState("user"); // Set default role
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,9 +36,15 @@ export const AuthForm = () => {
     try {
       console.log("Starting registration for email:", email);
       
+      // First, sign up the user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          data: {
+            role: role // Pass role in signup metadata
+          }
+        }
       });
 
       if (signUpError) {
