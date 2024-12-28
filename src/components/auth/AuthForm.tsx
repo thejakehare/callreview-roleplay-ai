@@ -22,6 +22,7 @@ export const AuthForm = () => {
 
   useEffect(() => {
     supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event, session);
       if (session?.user) {
         navigate("/dashboard");
       }
@@ -33,7 +34,9 @@ export const AuthForm = () => {
     setLoading(true);
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      console.log("Starting registration for email:", email);
+      
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -42,8 +45,8 @@ export const AuthForm = () => {
         if (signUpError.message.includes("User already registered")) {
           toast.error("An account with this email already exists. Switching to login form.");
           setIsLogin(true);
-          setEmail(email); // Preserve the email for convenience
-          setPassword(""); // Clear password for security
+          setEmail(email);
+          setPassword("");
         } else {
           console.error("Registration error:", signUpError);
           toast.error(signUpError.message);
@@ -51,7 +54,20 @@ export const AuthForm = () => {
         return;
       }
 
+      console.log("Registration successful:", data);
       toast.success("Registration successful! Please check your email for confirmation.");
+
+      // Check if profile was created
+      if (data.user?.id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+
+        console.log("Profile check:", { profileData, profileError });
+      }
+
     } catch (error: any) {
       console.error("Registration error:", error);
       toast.error(error.message || "An error occurred during registration");
@@ -76,7 +92,7 @@ export const AuthForm = () => {
               <LoginForm
                 onToggleMode={() => setIsLogin(false)}
                 onForgotPassword={() => setIsForgotPassword(true)}
-                defaultEmail={email} // Pass the email to LoginForm if user was redirected
+                defaultEmail={email}
               />
             ) : (
               <form onSubmit={handleRegistration} className="space-y-4">
