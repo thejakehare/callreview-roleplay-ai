@@ -33,58 +33,22 @@ export const AuthForm = () => {
     setLoading(true);
 
     try {
-      const { error: signUpError, data } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
         password,
       });
 
       if (signUpError) {
         if (signUpError.message.includes("User already registered")) {
-          toast.error("An account with this email already exists. Please try logging in instead.");
+          toast.error("An account with this email already exists. Switching to login form.");
           setIsLogin(true);
+          setEmail(email); // Preserve the email for convenience
+          setPassword(""); // Clear password for security
         } else {
           console.error("Registration error:", signUpError);
           toast.error(signUpError.message);
         }
         return;
-      }
-
-      if (data.user) {
-        let avatarUrl = null;
-        if (avatar) {
-          const fileExt = avatar.name.split('.').pop();
-          const filePath = `${data.user.id}-${Math.random()}.${fileExt}`;
-
-          const { error: uploadError } = await supabase.storage
-            .from('avatars')
-            .upload(filePath, avatar);
-
-          if (uploadError) {
-            console.error("Avatar upload error:", uploadError);
-            toast.error("Error uploading avatar");
-            return;
-          }
-
-          const { data: { publicUrl } } = supabase.storage
-            .from('avatars')
-            .getPublicUrl(filePath);
-
-          avatarUrl = publicUrl;
-        }
-
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({
-            avatar_url: avatarUrl,
-            role: role,
-          })
-          .eq('id', data.user.id);
-
-        if (profileError) {
-          console.error("Profile update error:", profileError);
-          toast.error("Error updating profile");
-          return;
-        }
       }
 
       toast.success("Registration successful! Please check your email for confirmation.");
@@ -112,6 +76,7 @@ export const AuthForm = () => {
               <LoginForm
                 onToggleMode={() => setIsLogin(false)}
                 onForgotPassword={() => setIsForgotPassword(true)}
+                defaultEmail={email} // Pass the email to LoginForm if user was redirected
               />
             ) : (
               <form onSubmit={handleRegistration} className="space-y-4">
