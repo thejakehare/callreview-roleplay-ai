@@ -46,18 +46,21 @@ export type Database = {
           created_at: string
           id: string
           name: string
+          owner_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
           name: string
+          owner_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
           name?: string
+          owner_id?: string
           updated_at?: string
         }
         Relationships: []
@@ -91,37 +94,72 @@ export type Database = {
           },
         ]
       }
+      invitations: {
+        Row: {
+          account_id: string
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          role: string
+          status: string
+        }
+        Insert: {
+          account_id: string
+          created_at?: string
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          role?: string
+          status?: string
+        }
+        Update: {
+          account_id?: string
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          role?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invitations_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
-          company_website: string | null
           created_at: string
           first_name: string | null
           id: string
           last_name: string | null
-          onboarding_completed: boolean | null
           role: string | null
           updated_at: string
         }
         Insert: {
           avatar_url?: string | null
-          company_website?: string | null
           created_at?: string
           first_name?: string | null
           id: string
           last_name?: string | null
-          onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
         }
         Update: {
           avatar_url?: string | null
-          company_website?: string | null
           created_at?: string
           first_name?: string | null
           id?: string
           last_name?: string | null
-          onboarding_completed?: boolean | null
           role?: string | null
           updated_at?: string
         }
@@ -159,7 +197,12 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      accept_invitation: {
+        Args: {
+          invitation_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
