@@ -22,7 +22,6 @@ export const LoginForm = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempt started for email:", email);
     setLoading(true);
     setError(null);
 
@@ -32,10 +31,8 @@ export const LoginForm = ({
         password,
       });
 
-      console.log("Login response:", { data, error: signInError });
-
       if (signInError) {
-        console.error("Login error details:", signInError);
+        console.error("Login error:", signInError);
         
         if (signInError.message.includes("Invalid login credentials")) {
           setError("Unable to find a user with that email. Please try again.");
@@ -48,46 +45,11 @@ export const LoginForm = ({
       }
 
       if (data?.user) {
-        console.log("Login successful, user:", data.user);
-        
-        // Check if user has a profile
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-
-        if (!profileData) {
-          navigate("/setup-profile");
-          return;
-        }
-
-        // Check if user belongs to any account
-        const { data: accountMember, error: accountError } = await supabase
-          .from('account_members')
-          .select('*')
-          .eq('user_id', data.user.id)
-          .maybeSingle();
-
-        console.log("Account member check:", { accountMember, accountError });
-
-        if (accountError) {
-          console.error("Error checking account membership:", accountError);
-          setError("Error checking account membership");
-          return;
-        }
-
-        if (!accountMember) {
-          console.log("No account membership found, redirecting to setup-account");
-          navigate("/setup-account");
-          return;
-        }
-
         toast.success("Successfully logged in!");
         navigate("/dashboard");
       }
     } catch (error: any) {
-      console.error("Unexpected login error:", error);
+      console.error("Login error:", error);
       setError(error.message || "An error occurred during login");
     } finally {
       setLoading(false);

@@ -1,35 +1,37 @@
 import { FormInput } from "@/components/auth/FormInput";
-import { User, Globe, Briefcase } from "lucide-react";
+import { Link, User, Globe, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { roleDisplayNames } from "@/utils/roleUtils";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface ProfileFormProps {
+  website: string;
   role: string;
   firstName: string;
   lastName: string;
   loading: boolean;
   onResetPassword: () => void;
+  onWebsiteChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onFirstNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onLastNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRoleChange: (value: string) => void;
   onSave: () => void;
   onAvatarUpload: (file: File) => void;
-  isSetupProfile?: boolean;
 }
 
 export const ProfileForm = ({ 
+  website, 
   role,
   firstName,
   lastName, 
   loading, 
   onResetPassword,
+  onWebsiteChange,
   onFirstNameChange,
   onLastNameChange,
   onRoleChange,
   onSave,
-  onAvatarUpload,
-  isSetupProfile = false
+  onAvatarUpload
 }: ProfileFormProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -76,6 +78,15 @@ export const ProfileForm = ({
         icon={User}
       />
 
+      <FormInput
+        type="url"
+        label="Company Website"
+        placeholder="https://example.com"
+        value={website}
+        onChange={onWebsiteChange}
+        icon={Globe}
+      />
+
       <div className="space-y-2">
         <label className="text-sm font-medium text-foreground">Role</label>
         <Select value={role} onValueChange={onRoleChange}>
@@ -102,19 +113,17 @@ export const ProfileForm = ({
           className="w-full"
           disabled={loading}
         >
-          {isSetupProfile ? "Create Your Account" : "Save Changes"}
+          Save Changes
         </Button>
 
-        {!isSetupProfile && (
-          <Button
-            onClick={onResetPassword}
-            variant="outline"
-            className="w-full"
-            disabled={loading}
-          >
-            Reset Password
-          </Button>
-        )}
+        <Button
+          onClick={onResetPassword}
+          variant="outline"
+          className="w-full"
+          disabled={loading}
+        >
+          Reset Password
+        </Button>
       </div>
     </div>
   );

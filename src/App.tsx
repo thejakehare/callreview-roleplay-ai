@@ -6,9 +6,6 @@ import { RoleplaySession } from "@/components/roleplay/RoleplaySession";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { Profile } from "@/pages/Profile";
 import { SessionDetails } from "@/pages/SessionDetails";
-import { AcceptInvitation } from "@/components/invitations/AcceptInvitation";
-import { SetupProfile } from "@/pages/SetupProfile";
-import { SetupAccount } from "@/pages/SetupAccount";
 import Home from "@/pages/Home";
 import Header from "@/components/layout/Header";
 
@@ -24,26 +21,10 @@ const App = () => {
           path="/auth"
           element={
             session ? (
-              <Navigate to="/setup-profile" replace />
+              <Navigate to="/dashboard" replace />
             ) : (
               <AuthForm />
             )
-          }
-        />
-        <Route
-          path="/setup-profile"
-          element={
-            <ProtectedRoute>
-              <SetupProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/setup-account"
-          element={
-            <ProtectedRoute>
-              <SetupAccount />
-            </ProtectedRoute>
           }
         />
         <Route
@@ -78,7 +59,6 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/accept-invitation" element={<AcceptInvitation />} />
         {/* Catch all route - redirect to home */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { useProfileData } from "@/hooks/useProfileData";
 import { LogOut, User } from "lucide-react";
-import { AccountSwitcher } from "@/components/accounts/AccountSwitcher";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -40,41 +39,42 @@ const Header = () => {
       <div className="container flex h-14 items-center">
         <MainNav />
         <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <AccountSwitcher />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                className="relative h-8 w-8 rounded-full"
+          <div className="w-full flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className="relative h-8 w-8 rounded-full"
+                >
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={avatarUrl || ""} alt={email || ""} />
+                    <AvatarFallback>
+                      {email ? email[0].toUpperCase() : "?"}
+                    </AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent
+                className="w-48 bg-card border-border"
+                align="end"
               >
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatarUrl || ""} alt={email || ""} />
-                  <AvatarFallback>
-                    {email ? email[0].toUpperCase() : "?"}
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent
-              className="w-48 bg-card border-border"
-              align="end"
-            >
-              <DropdownMenuItem
-                className="hover:bg-accent focus:bg-accent"
-                onClick={() => navigate("/profile")}
-              >
-                <User className="mr-2 h-4 w-4" />
-                <span>Profile</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="hover:bg-accent focus:bg-accent"
-                onClick={handleSignOut}
-              >
-                <LogOut className="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <DropdownMenuItem
+                  className="hover:bg-accent focus:bg-accent"
+                  onClick={() => navigate("/profile")}
+                >
+                  <User className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="hover:bg-accent focus:bg-accent"
+                  onClick={handleSignOut}
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
     </header>

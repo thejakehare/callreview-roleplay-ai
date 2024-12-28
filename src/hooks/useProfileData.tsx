@@ -1,74 +1,165 @@
 import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { profileApi, Profile } from "@/api/profileApi";
-import { usePasswordReset } from "./usePasswordReset";
+import { toast } from "sonner";
 
 export const useProfileData = () => {
   const { session } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Profile>({
-    role: "",
-    first_name: "",
-    last_name: "",
-    avatar_url: null
-  });
-
-  const { loading: resetLoading, handleResetPassword } = usePasswordReset();
-
-  const getProfile = async () => {
-    if (!session?.user.id) {
-      console.error("No user ID found in session");
-      return;
-    }
-
-    setLoading(true);
-    const profileData = await profileApi.getProfile(session.user.id);
-    
-    if (profileData) {
-      setProfile(profileData);
-    }
-    
-    setLoading(false);
-  };
+  const [website, setWebsite] = useState("");
+  const [role, setRole] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   useEffect(() => {
     getProfile();
   }, [session?.user.id]);
 
+  const getProfile = async () => {
+    try {
+      setLoading(true);
+      
+      if (!session?.user.id) {
+        console.error("No user ID found in session");
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('company_website, role, avatar_url, first_name, last_name')
+        .eq('id', session.user.id)
+        .single();
+
+      if (error) {
+        console.error("Error fetching profile:", error);
+        toast.error('Error loading profile');
+        return;
+      }
+
+      if (data) {
+        setWebsite(data.company_website || "");
+        setRole(data.role || "");
+        setFirstName(data.first_name || "");
+        setLastName(data.last_name || "");
+        
+        // If there's an avatar_url, ensure it's a valid URL
+        if (data.avatar_url) {
+          try {
+            // Validate if it's already a full URL
+            new URL(data.avatar_url);
+            setAvatarUrl(data.avatar_url);
+          } catch {
+            // If it's not a full URL, get the public URL from storage
+            const { data: publicUrl } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(data.avatar_url);
+            setAvatarUrl(publicUrl.publicUrl);
+          }
+        } else {
+          setAvatarUrl(null);
+        }
+      }
+    } catch (error) {
+      console.error("Unexpected error:", error);
+      toast.error('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSave = async () => {
-    if (!session?.user.id) return;
-    
-    setLoading(true);
-    await profileApi.updateProfile(session.user.id, {
-      role: profile.role,
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-    });
-    setLoading(false);
+    try {
+      setLoading(true);
+      
+      if (!session?.user.id) return;
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          company_website: website,
+          role,
+          first_name: firstName,
+          last_name: lastName,
+        })
+        .eq('id', session.user.id);
+
+      if (error) throw error;
+      toast.success('Profile updated successfully');
+    } catch (error: any) {
+      toast.error('Error updating profile');
+      console.error('Error:', error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAvatarUpload = async (file: File) => {
-    if (!session?.user.id) return;
-    
-    setLoading(true);
-    const publicUrl = await profileApi.uploadAvatar(session.user.id, file);
-    if (publicUrl) {
-      setProfile(prev => ({ ...prev, avatar_url: publicUrl }));
+    try {
+      setLoading(true);
+      
+      if (!session?.user.id) return;
+
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${session.user.id}-${Math.random()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: filePath })
+        .eq('id', session.user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(publicUrl);
+      toast.success('Profile photo updated successfully');
+    } catch (error: any) {
+      toast.error('Error uploading profile photo');
+      console.error('Error:', error.message);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  const handleResetPassword = async () => {
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.resetPasswordForEmail(
+        session?.user.email || "",
+        { redirectTo: `${window.location.origin}/auth` }
+      );
+
+      if (error) throw error;
+      toast.success("Password reset email sent!");
+    } catch (error: any) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
-    loading: loading || resetLoading,
-    role: profile.role,
-    firstName: profile.first_name,
-    lastName: profile.last_name,
-    avatarUrl: profile.avatar_url,
-    setRole: (role: string) => setProfile(prev => ({ ...prev, role })),
-    setFirstName: (first_name: string) => setProfile(prev => ({ ...prev, first_name })),
-    setLastName: (last_name: string) => setProfile(prev => ({ ...prev, last_name })),
+    loading,
+    website,
+    role,
+    firstName,
+    lastName,
+    avatarUrl,
+    setWebsite,
+    setRole,
+    setFirstName,
+    setLastName,
     handleSave,
     handleAvatarUpload,
-    handleResetPassword: () => handleResetPassword(session?.user.email || "")
+    handleResetPassword
   };
 };

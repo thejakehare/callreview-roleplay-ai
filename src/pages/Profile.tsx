@@ -8,10 +8,12 @@ export const Profile = () => {
   const { session } = useAuth();
   const {
     loading,
+    website,
     role,
     firstName,
     lastName,
     avatarUrl,
+    setWebsite,
     setRole,
     setFirstName,
     setLastName,
@@ -19,9 +21,6 @@ export const Profile = () => {
     handleAvatarUpload,
     handleResetPassword
   } = useProfileData();
-
-  // Hide header if we're on the setup-profile route
-  const isSetupProfile = window.location.pathname === '/setup-profile';
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -35,17 +34,18 @@ export const Profile = () => {
             email={session?.user.email || ""} 
           />
           <ProfileForm
+            website={website}
             role={role}
             firstName={firstName}
             lastName={lastName}
             loading={loading}
             onResetPassword={handleResetPassword}
+            onWebsiteChange={(e) => setWebsite(e.target.value)}
             onFirstNameChange={(e) => setFirstName(e.target.value)}
             onLastNameChange={(e) => setLastName(e.target.value)}
             onRoleChange={setRole}
             onSave={handleSave}
             onAvatarUpload={handleAvatarUpload}
-            isSetupProfile={isSetupProfile}
           />
         </CardContent>
       </Card>
