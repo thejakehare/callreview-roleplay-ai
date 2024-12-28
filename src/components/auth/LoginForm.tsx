@@ -10,13 +10,13 @@ import { FormFooter } from "./FormFooter";
 export const LoginForm = ({
   onToggleMode,
   onForgotPassword,
-  defaultEmail = "", // Add defaultEmail prop with default empty string
+  defaultEmail = "",
 }: {
   onToggleMode: () => void;
   onForgotPassword: () => void;
-  defaultEmail?: string; // Make it optional
+  defaultEmail?: string;
 }) => {
-  const [email, setEmail] = useState(defaultEmail); // Initialize with defaultEmail
+  const [email, setEmail] = useState(defaultEmail);
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

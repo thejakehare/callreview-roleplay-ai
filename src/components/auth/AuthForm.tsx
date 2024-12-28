@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
@@ -7,9 +6,8 @@ import { FormInput } from "./FormInput";
 import { RegistrationFields } from "./RegistrationFields";
 import { LoginForm } from "./LoginForm";
 import { PasswordResetForm } from "./PasswordResetForm";
-import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { AuthCard } from "./AuthCard";
+import { AuthFooter } from "./AuthFooter";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,28 +27,6 @@ export const AuthForm = () => {
       }
     });
   }, [navigate]);
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          queryParams: {
-            access_type: 'offline',
-            prompt: 'consent',
-          },
-        },
-      });
-
-      if (error) {
-        console.error("Google sign in error:", error);
-        toast.error("Failed to sign in with Google");
-      }
-    } catch (error: any) {
-      console.error("Google sign in error:", error);
-      toast.error(error.message || "An error occurred during Google sign in");
-    }
-  };
 
   const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,123 +82,66 @@ export const AuthForm = () => {
   return (
     <div className="min-h-screen flex flex-col items-center justify-between bg-background">
       <div className="flex-1 flex items-center justify-center w-full">
-        <Card className="w-[400px] bg-card border-0">
-          <CardHeader>
-            <CardTitle className="text-foreground text-center">
-              {isForgotPassword ? "Reset Password" : (isLogin ? "Login" : "Register")}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isForgotPassword ? (
-              <PasswordResetForm onBack={() => setIsForgotPassword(false)} />
-            ) : isLogin ? (
-              <>
-                <LoginForm
-                  onToggleMode={() => setIsLogin(false)}
-                  onForgotPassword={() => setIsForgotPassword(true)}
-                  defaultEmail={email}
-                />
-                <div className="relative my-4">
-                  <Separator />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-background px-2 text-sm text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleSignIn}
-                >
-                  <img
-                    src="https://www.google.com/favicon.ico"
-                    alt="Google"
-                    className="w-4 h-4 mr-2"
-                  />
-                  Sign in with Google
-                </Button>
-              </>
-            ) : (
-              <form onSubmit={handleRegistration} className="space-y-4">
-                <FormInput
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                
-                <FormInput
-                  type="password"
-                  placeholder="Password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-
-                <RegistrationFields
-                  role={role}
-                  setRole={setRole}
-                  onAvatarChange={(e) => {
-                    if (e.target.files && e.target.files[0]) {
-                      setAvatar(e.target.files[0]);
-                    }
-                  }}
-                />
-
-                <div className="space-y-2">
-                  <Button type="submit" className="w-full" disabled={loading}>
-                    {loading ? "Registering..." : "Register"}
-                  </Button>
-                  <button
-                    type="button"
-                    className="flex items-center justify-center gap-2 w-full text-primary hover:text-primary/90 text-sm"
-                    onClick={() => setIsLogin(true)}
-                  >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to login
-                  </button>
-                </div>
-
-                <div className="relative my-4">
-                  <Separator />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="bg-background px-2 text-sm text-muted-foreground">
-                      Or continue with
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full"
-                  onClick={handleGoogleSignIn}
-                >
-                  <img
-                    src="https://www.google.com/favicon.ico"
-                    alt="Google"
-                    className="w-4 h-4 mr-2"
-                  />
-                  Sign up with Google
-                </Button>
-              </form>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-      <footer className="w-full py-6 px-4 flex items-center justify-center space-x-2 text-muted">
-        <span>Powered by</span>
-        <a 
-          href="https://callreview.ai/?utm_source=roleplayai" 
-          target="_blank" 
-          rel="noopener noreferrer"
+        <AuthCard
+          title={isForgotPassword ? "Reset Password" : (isLogin ? "Login" : "Register")}
         >
-          <img src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" alt="Logo" className="h-6" />
-        </a>
-      </footer>
+          {isForgotPassword ? (
+            <PasswordResetForm onBack={() => setIsForgotPassword(false)} />
+          ) : isLogin ? (
+            <LoginForm
+              onToggleMode={() => setIsLogin(false)}
+              onForgotPassword={() => setIsForgotPassword(true)}
+              defaultEmail={email}
+            />
+          ) : (
+            <form onSubmit={handleRegistration} className="space-y-4">
+              <FormInput
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+              
+              <FormInput
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+
+              <RegistrationFields
+                role={role}
+                setRole={setRole}
+                onAvatarChange={(e) => {
+                  if (e.target.files && e.target.files[0]) {
+                    setAvatar(e.target.files[0]);
+                  }
+                }}
+              />
+
+              <div className="space-y-2">
+                <button
+                  type="submit"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md"
+                  disabled={loading}
+                >
+                  {loading ? "Registering..." : "Register"}
+                </button>
+                <button
+                  type="button"
+                  className="w-full text-primary hover:text-primary/90 px-4 py-2"
+                  onClick={() => setIsLogin(true)}
+                >
+                  Back to login
+                </button>
+              </div>
+            </form>
+          )}
+        </AuthCard>
+      </div>
+      <AuthFooter />
     </div>
   );
 };
