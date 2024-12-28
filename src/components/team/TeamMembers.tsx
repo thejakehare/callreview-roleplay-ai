@@ -32,7 +32,7 @@ interface ProfileData {
 interface AccountMemberWithProfile {
   id: string;
   role: string;
-  profile: ProfileData[];  // Changed to array to match Supabase response
+  user_id: string;
 }
 
 export const TeamMembers = () => {
@@ -45,16 +45,13 @@ export const TeamMembers = () => {
       if (!currentAccount) return;
 
       try {
+        // First get account members
         const { data: memberData, error } = await supabase
           .from('account_members')
           .select(`
             id,
             role,
-            profile:profiles(
-              id,
-              first_name,
-              last_name
-            )
+            user_id
           `)
           .eq('account_id', currentAccount.id);
 
@@ -62,8 +59,15 @@ export const TeamMembers = () => {
 
         const typedMemberData = memberData as AccountMemberWithProfile[];
 
-        // Get emails from auth.users for the profiles
-        const userIds = typedMemberData.map(member => member.profile[0]?.id).filter(Boolean) || [];
+        // Then get profiles for these members
+        const { data: profilesData, error: profilesError } = await supabase
+          .from('profiles')
+          .select('id, first_name, last_name')
+          .in('id', typedMemberData.map(member => member.user_id));
+
+        if (profilesError) throw profilesError;
+
+        // Get emails from auth.users
         const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
         
         if (userError) throw userError;
@@ -73,14 +77,19 @@ export const TeamMembers = () => {
           (userData.users as User[]).map(user => [user.id, user.email || ''])
         );
 
+        // Create a map of user IDs to profiles for easier lookup
+        const profileMap = new Map(
+          profilesData.map(profile => [profile.id, profile])
+        );
+
         // Transform the data to match our interface
         const formattedMembers: TeamMember[] = typedMemberData.map(member => ({
           id: member.id,
           role: member.role,
           profile: {
-            email: userEmails.get(member.profile[0]?.id) || 'No email found',
-            first_name: member.profile[0]?.first_name || null,
-            last_name: member.profile[0]?.last_name || null
+            email: userEmails.get(member.user_id) || 'No email found',
+            first_name: profileMap.get(member.user_id)?.first_name || null,
+            last_name: profileMap.get(member.user_id)?.last_name || null
           }
         }));
 
