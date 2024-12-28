@@ -24,6 +24,28 @@ export const RoleplaySession = () => {
     }
   };
 
+  const fetchConversationData = async (conversationId: string) => {
+    try {
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
+        {
+          headers: {
+            "xi-api-key": import.meta.env.VITE_ELEVENLABS_API_KEY,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching conversation data:", error);
+      throw error;
+    }
+  };
+
   const saveSessionData = async (conversationData: any) => {
     try {
       if (!session?.user?.id) {
@@ -31,11 +53,16 @@ export const RoleplaySession = () => {
         return;
       }
 
+      // Extract relevant data from the conversation
+      const duration = Math.round(conversationData.duration_seconds || 0);
+      const summary = conversationData.summary || "";
+      const feedback = JSON.stringify(conversationData.feedback || {});
+
       const { error } = await supabase.from("sessions").insert({
         user_id: session.user.id,
-        duration: conversationData.metadata.call_duration_secs,
-        summary: conversationData.analysis.transcript_summary,
-        feedback: JSON.stringify(conversationData.metadata.feedback),
+        duration,
+        summary,
+        feedback,
       });
 
       if (error) {
@@ -51,8 +78,21 @@ export const RoleplaySession = () => {
 
   const endSession = async () => {
     try {
-      const conversationData = await conversation.endSession();
-      await saveSessionData(conversationData);
+      const result = await conversation.endSession();
+      
+      // Check if we have a conversation ID
+      if (result?.conversationId) {
+        // First show a loading toast
+        toast.loading("Processing conversation data...");
+        
+        // Fetch the complete conversation data
+        const conversationData = await fetchConversationData(result.conversationId);
+        
+        // Save the data to our database
+        await saveSessionData(conversationData);
+      } else {
+        throw new Error("No conversation ID received");
+      }
     } catch (error) {
       console.error("Error ending session:", error);
       toast.error("Failed to end session");
