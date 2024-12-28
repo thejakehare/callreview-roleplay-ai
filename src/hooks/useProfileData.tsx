@@ -28,7 +28,7 @@ export const useProfileData = () => {
         .from('profiles')
         .select('role, avatar_url, first_name, last_name')
         .eq('id', session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching profile:", error);
@@ -56,6 +56,24 @@ export const useProfileData = () => {
           }
         } else {
           setAvatarUrl(null);
+        }
+      } else {
+        // If no profile exists, create one
+        const { error: createError } = await supabase
+          .from('profiles')
+          .insert([
+            { 
+              id: session.user.id,
+              role: 'user',
+              first_name: null,
+              last_name: null,
+              avatar_url: null
+            }
+          ]);
+
+        if (createError) {
+          console.error("Error creating profile:", createError);
+          toast.error('Error creating profile');
         }
       }
     } catch (error) {
