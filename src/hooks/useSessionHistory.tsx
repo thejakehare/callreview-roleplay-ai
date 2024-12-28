@@ -43,7 +43,7 @@ export const useSessionHistory = () => {
         }
 
         // Create a Set of favorite session IDs for efficient lookup
-        const favoriteSessionIds = new Set(favoritesData.map(f => f.session_id));
+        const favoriteSessionIds = new Set(favoritesData?.map(f => f.session_id));
 
         // Combine sessions with favorite information
         const sessionsWithFavorites = sessionsData?.map(session => ({
@@ -60,7 +60,30 @@ export const useSessionHistory = () => {
       }
     };
 
+    // Initial fetch
     fetchSessions();
+
+    // Subscribe to changes in the favorites table
+    const channel = supabase
+      .channel('favorites_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*', // Listen to all changes (INSERT, UPDATE, DELETE)
+          schema: 'public',
+          table: 'favorites'
+        },
+        () => {
+          // Refetch sessions and favorites when changes occur
+          fetchSessions();
+        }
+      )
+      .subscribe();
+
+    // Cleanup subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   return { sessions, loading };
