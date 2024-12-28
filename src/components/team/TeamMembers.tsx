@@ -32,7 +32,7 @@ interface ProfileData {
 interface AccountMemberWithProfile {
   id: string;
   role: string;
-  profile: ProfileData;
+  profile: ProfileData[];  // Changed to array to match Supabase response
 }
 
 export const TeamMembers = () => {
@@ -63,7 +63,7 @@ export const TeamMembers = () => {
         const typedMemberData = memberData as AccountMemberWithProfile[];
 
         // Get emails from auth.users for the profiles
-        const userIds = typedMemberData.map(member => member.profile?.id).filter(Boolean) || [];
+        const userIds = typedMemberData.map(member => member.profile[0]?.id).filter(Boolean) || [];
         const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
         
         if (userError) throw userError;
@@ -78,9 +78,9 @@ export const TeamMembers = () => {
           id: member.id,
           role: member.role,
           profile: {
-            email: userEmails.get(member.profile?.id) || 'No email found',
-            first_name: member.profile?.first_name || null,
-            last_name: member.profile?.last_name || null
+            email: userEmails.get(member.profile[0]?.id) || 'No email found',
+            first_name: member.profile[0]?.first_name || null,
+            last_name: member.profile[0]?.last_name || null
           }
         }));
 
