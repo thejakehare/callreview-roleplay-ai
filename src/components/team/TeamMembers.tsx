@@ -29,6 +29,12 @@ interface ProfileData {
   last_name: string | null;
 }
 
+interface AccountMemberWithProfile {
+  id: string;
+  role: string;
+  profile: ProfileData;
+}
+
 export const TeamMembers = () => {
   const { currentAccount } = useAccounts();
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -39,7 +45,7 @@ export const TeamMembers = () => {
       if (!currentAccount) return;
 
       try {
-        const { data, error } = await supabase
+        const { data: memberData, error } = await supabase
           .from('account_members')
           .select(`
             id,
@@ -54,8 +60,10 @@ export const TeamMembers = () => {
 
         if (error) throw error;
 
+        const typedMemberData = memberData as AccountMemberWithProfile[];
+
         // Get emails from auth.users for the profiles
-        const userIds = data?.map(member => (member.profile as ProfileData)?.id).filter(Boolean) || [];
+        const userIds = typedMemberData.map(member => member.profile?.id).filter(Boolean) || [];
         const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
         
         if (userError) throw userError;
@@ -66,13 +74,13 @@ export const TeamMembers = () => {
         );
 
         // Transform the data to match our interface
-        const formattedMembers: TeamMember[] = (data || []).map(member => ({
+        const formattedMembers: TeamMember[] = typedMemberData.map(member => ({
           id: member.id,
           role: member.role,
           profile: {
-            email: userEmails.get((member.profile as ProfileData)?.id) || 'No email found',
-            first_name: (member.profile as ProfileData)?.first_name || null,
-            last_name: (member.profile as ProfileData)?.last_name || null
+            email: userEmails.get(member.profile?.id) || 'No email found',
+            first_name: member.profile?.first_name || null,
+            last_name: member.profile?.last_name || null
           }
         }));
 
