@@ -6,7 +6,6 @@ import { toast } from "sonner";
 export const useProfileData = () => {
   const { session } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [website, setWebsite] = useState("");
   const [role, setRole] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -27,7 +26,7 @@ export const useProfileData = () => {
 
       const { data, error } = await supabase
         .from('profiles')
-        .select('company_website, role, avatar_url, first_name, last_name')
+        .select('role, avatar_url, first_name, last_name')
         .eq('id', session.user.id)
         .single();
 
@@ -38,7 +37,6 @@ export const useProfileData = () => {
       }
 
       if (data) {
-        setWebsite(data.company_website || "");
         setRole(data.role || "");
         setFirstName(data.first_name || "");
         setLastName(data.last_name || "");
@@ -77,7 +75,6 @@ export const useProfileData = () => {
       const { error } = await supabase
         .from('profiles')
         .update({
-          company_website: website,
           role,
           first_name: firstName,
           last_name: lastName,
@@ -149,12 +146,10 @@ export const useProfileData = () => {
 
   return {
     loading,
-    website,
     role,
     firstName,
     lastName,
     avatarUrl,
-    setWebsite,
     setRole,
     setFirstName,
     setLastName,
