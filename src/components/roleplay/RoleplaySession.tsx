@@ -7,6 +7,11 @@ import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { toast } from "sonner";
 
+// Define the type for the end session result
+type EndSessionResult = {
+  conversationId: string;
+} | null;
+
 export const RoleplaySession = () => {
   const [isActive, setIsActive] = useState(false);
   const conversation = useConversation();
@@ -84,7 +89,8 @@ export const RoleplaySession = () => {
 
   const endSession = async () => {
     try {
-      const result = await conversation.endSession();
+      // Cast the result to our EndSessionResult type
+      const result = await conversation.endSession() as EndSessionResult;
       
       // Check if we have a conversation ID
       if (result?.conversationId) {
