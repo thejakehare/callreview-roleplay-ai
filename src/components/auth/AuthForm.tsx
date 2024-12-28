@@ -9,6 +9,7 @@ import { LoginForm } from "./LoginForm";
 import { PasswordResetForm } from "./PasswordResetForm";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -17,7 +18,7 @@ export const AuthForm = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [avatar, setAvatar] = useState<File | null>(null);
-  const [role, setRole] = useState("user"); // Set default role
+  const [role, setRole] = useState("user");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -29,6 +30,28 @@ export const AuthForm = () => {
     });
   }, [navigate]);
 
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+
+      if (error) {
+        console.error("Google sign in error:", error);
+        toast.error("Failed to sign in with Google");
+      }
+    } catch (error: any) {
+      console.error("Google sign in error:", error);
+      toast.error(error.message || "An error occurred during Google sign in");
+    }
+  };
+
   const handleRegistration = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -36,13 +59,12 @@ export const AuthForm = () => {
     try {
       console.log("Starting registration for email:", email);
       
-      // First, sign up the user
       const { data, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            role: role // Pass role in signup metadata
+            role: role
           }
         }
       });
@@ -63,7 +85,6 @@ export const AuthForm = () => {
       console.log("Registration successful:", data);
       toast.success("Registration successful! Please check your email for confirmation.");
 
-      // Check if profile was created
       if (data.user?.id) {
         const { data: profileData, error: profileError } = await supabase
           .from('profiles')
@@ -95,11 +116,34 @@ export const AuthForm = () => {
             {isForgotPassword ? (
               <PasswordResetForm onBack={() => setIsForgotPassword(false)} />
             ) : isLogin ? (
-              <LoginForm
-                onToggleMode={() => setIsLogin(false)}
-                onForgotPassword={() => setIsForgotPassword(true)}
-                defaultEmail={email}
-              />
+              <>
+                <LoginForm
+                  onToggleMode={() => setIsLogin(false)}
+                  onForgotPassword={() => setIsForgotPassword(true)}
+                  defaultEmail={email}
+                />
+                <div className="relative my-4">
+                  <Separator />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-background px-2 text-sm text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                >
+                  <img
+                    src="https://www.google.com/favicon.ico"
+                    alt="Google"
+                    className="w-4 h-4 mr-2"
+                  />
+                  Sign in with Google
+                </Button>
+              </>
             ) : (
               <form onSubmit={handleRegistration} className="space-y-4">
                 <FormInput
@@ -141,6 +185,29 @@ export const AuthForm = () => {
                     Back to login
                   </button>
                 </div>
+
+                <div className="relative my-4">
+                  <Separator />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="bg-background px-2 text-sm text-muted-foreground">
+                      Or continue with
+                    </span>
+                  </div>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleSignIn}
+                >
+                  <img
+                    src="https://www.google.com/favicon.ico"
+                    alt="Google"
+                    className="w-4 h-4 mr-2"
+                  />
+                  Sign up with Google
+                </Button>
               </form>
             )}
           </CardContent>
