@@ -48,7 +48,7 @@ const Home = () => {
         />
 
         {/* Badge */}
-        <div className="bg-card/30 backdrop-blur-sm text-primary px-4 py-1.5 rounded-full text-sm mb-8">
+        <div className="bg-[#1A1F2C] backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm mb-8">
           For High Ticket Sales Reps
         </div>
 
