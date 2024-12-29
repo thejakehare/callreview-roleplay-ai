@@ -8,14 +8,52 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Clock, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
+interface ConversationData {
+  transcript: Array<{
+    role: string;
+    content: string;
+  }>;
+}
+
 export const SessionDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [session, setSession] = useState<Tables<"sessions"> | null>(null);
+  const [conversationData, setConversationData] = useState<ConversationData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const fetchConversationData = async (conversationId: string) => {
+    try {
+      const { data: { api_key }, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
+      
+      if (keyError || !api_key) {
+        console.error("Failed to get API key:", keyError);
+        throw new Error('Failed to get API key');
+      }
+
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
+        {
+          headers: {
+            "xi-api-key": api_key,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching conversation data:", error);
+      throw error;
+    }
+  };
+
   useEffect(() => {
-    const fetchSession = async () => {
+    const fetchData = async () => {
       try {
         const { data, error } = await supabase
           .from("sessions")
@@ -29,6 +67,11 @@ export const SessionDetails = () => {
         }
 
         setSession(data);
+
+        if (data.conversation_id) {
+          const conversationData = await fetchConversationData(data.conversation_id);
+          setConversationData(conversationData);
+        }
       } catch (error) {
         console.error("Error:", error);
         toast.error("An error occurred while loading session details");
@@ -37,7 +80,7 @@ export const SessionDetails = () => {
       }
     };
 
-    fetchSession();
+    fetchData();
   }, [id]);
 
   if (loading) {
@@ -55,8 +98,6 @@ export const SessionDetails = () => {
       </div>
     );
   }
-
-  const transcript = session.transcript ? JSON.parse(session.transcript) : [];
 
   return (
     <div className="container mx-auto py-12 px-4">
@@ -88,7 +129,7 @@ export const SessionDetails = () => {
                   <span className="font-medium">Transcript</span>
                 </div>
                 <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                  {transcript.map((entry: any, index: number) => (
+                  {conversationData?.transcript?.map((entry, index) => (
                     <div key={index} className="border-b border-border pb-4 last:border-0">
                       <p className="font-medium mb-1">{entry.role === "assistant" ? "AI" : "You"}</p>
                       <p className="text-muted-foreground">{entry.content}</p>
