@@ -48,19 +48,19 @@ const Home = () => {
 
         {/* Badge */}
         <div className="bg-card/30 backdrop-blur-sm text-primary px-4 py-1.5 rounded-full text-sm mb-8">
-          #1 Ranked AI Roleplay Platform
+          For High Ticket Sales Reps
         </div>
 
         {/* Hero Content */}
         <div className="max-w-4xl text-center space-y-6 z-10">
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-white to-primary bg-clip-text text-transparent">
-            Practice Communication
+            Get Your Personal
             <br />
-            With AI Roleplay
+            Sales Roleplay AI
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Enhance your communication skills through interactive AI-powered scenarios. 
-            Perfect for interviews, customer service, and professional development.
+            Enhance your sales skills by doing live roleplay sessions with AI. 
+            Anytime, anywhere, any scenario.
           </p>
           
           {/* CTA Button */}
