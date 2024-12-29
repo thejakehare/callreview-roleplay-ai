@@ -2,8 +2,9 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Play } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { AuthFooter } from "@/components/auth/AuthFooter";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -74,23 +75,10 @@ const Home = () => {
             </Button>
           </div>
         </div>
-
-        {/* Stats */}
-        <div className="flex gap-8 mt-16 bg-card/30 backdrop-blur-sm rounded-full px-8 py-4">
-          <div className="text-center px-8">
-            <div className="text-2xl font-bold text-foreground">1000+</div>
-            <div className="text-sm text-muted-foreground">Active Users</div>
-          </div>
-          <div className="text-center px-8 border-x border-muted/20">
-            <div className="text-2xl font-bold text-foreground">98.5%</div>
-            <div className="text-sm text-muted-foreground">Success Rate</div>
-          </div>
-          <div className="text-center px-8">
-            <div className="text-2xl font-bold text-foreground">10+</div>
-            <div className="text-sm text-muted-foreground">Scenarios</div>
-          </div>
-        </div>
       </main>
+
+      {/* Footer */}
+      <AuthFooter />
     </div>
   );
 };
