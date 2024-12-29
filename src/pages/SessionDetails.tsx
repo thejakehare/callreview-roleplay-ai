@@ -8,11 +8,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Clock, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 
+interface TranscriptEntry {
+  role: string;
+  message: string;
+  time_in_call_secs: number;
+}
+
 interface ConversationData {
-  transcript: Array<{
-    role: string;
-    content: string;
-  }>;
+  transcript: TranscriptEntry[];
+  metadata?: {
+    call_duration_secs: number;
+  };
+  analysis?: {
+    transcript_summary: string;
+  };
 }
 
 export const SessionDetails = () => {
@@ -152,8 +161,8 @@ export const SessionDetails = () => {
                   ) : conversationData?.transcript ? (
                     conversationData.transcript.map((entry, index) => (
                       <div key={index} className="border-b border-border pb-4 last:border-0">
-                        <p className="font-medium mb-1">{entry.role === "assistant" ? "AI" : "You"}</p>
-                        <p className="text-muted-foreground">{entry.content}</p>
+                        <p className="font-medium mb-1">{entry.role === "agent" ? "AI" : "You"}</p>
+                        <p className="text-muted-foreground">{entry.message}</p>
                       </div>
                     ))
                   ) : (
