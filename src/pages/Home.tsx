@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Button } from "@/components/ui/button";
 import { ChevronRight, Play } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -59,6 +60,13 @@ const Home = () => {
           style={{
             background: "radial-gradient(circle at center, rgba(155,135,245,0.15) 0%, rgba(26,31,44,0) 70%)",
           }}
+        />
+
+        {/* Animated Logo */}
+        <img
+          src={`${supabase.storage.from('logos').getPublicUrl('call-review-ai-animated.gif').data.publicUrl}`}
+          alt="Call Review AI Animation"
+          className="w-64 h-64 mb-8 object-contain"
         />
 
         {/* Badge */}
