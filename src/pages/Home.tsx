@@ -20,16 +20,6 @@ const Home = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
-      {/* Navigation */}
-      <nav className="w-full px-6 py-4 flex justify-end items-center z-10">
-        <Button 
-          onClick={() => navigate("/auth")}
-          className="bg-card hover:bg-card/80 text-foreground gap-2"
-        >
-          Get started <ChevronRight className="w-4 h-4" />
-        </Button>
-      </nav>
-
       {/* Main Content */}
       <main className="flex-1 flex flex-col items-center justify-center px-4 relative">
         {/* Purple gradient background */}
