@@ -58,7 +58,7 @@ const Home = () => {
           <div className="flex gap-4 justify-center pt-4">
             <Button
               size="lg"
-              onClick={() => navigate("/auth")}
+              onClick={() => navigate("/auth?mode=register")}
               className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
             >
               Get Started Free <ChevronRight className="w-4 h-4" />
