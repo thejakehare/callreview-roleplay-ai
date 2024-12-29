@@ -20,36 +20,13 @@ const Home = () => {
   return (
     <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
       {/* Navigation */}
-      <nav className="w-full px-6 py-4 flex justify-between items-center z-10">
-        <div className="flex items-center gap-2">
-          <img 
-            src="/lovable-uploads/817e91e5-c9a8-40b8-b645-f0a8093d2b24.png" 
-            alt="Logo" 
-            className="w-8 h-8"
-          />
-        </div>
-        <div className="flex items-center gap-6">
-          <Button 
-            variant="ghost" 
-            className="text-muted-foreground hover:text-primary"
-            onClick={() => navigate("/auth")}
-          >
-            About
-          </Button>
-          <Button 
-            variant="ghost" 
-            className="text-muted-foreground hover:text-primary"
-            onClick={() => navigate("/auth")}
-          >
-            Blog
-          </Button>
-          <Button 
-            onClick={() => navigate("/auth")}
-            className="bg-card hover:bg-card/80 text-foreground gap-2"
-          >
-            Get started <ChevronRight className="w-4 h-4" />
-          </Button>
-        </div>
+      <nav className="w-full px-6 py-4 flex justify-end items-center z-10">
+        <Button 
+          onClick={() => navigate("/auth")}
+          className="bg-card hover:bg-card/80 text-foreground gap-2"
+        >
+          Get started <ChevronRight className="w-4 h-4" />
+        </Button>
       </nav>
 
       {/* Main Content */}
