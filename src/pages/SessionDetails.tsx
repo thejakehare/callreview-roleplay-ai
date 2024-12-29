@@ -24,6 +24,8 @@ export const SessionDetails = () => {
 
   const fetchConversationData = async (conversationId: string) => {
     try {
+      console.log("Fetching conversation data for ID:", conversationId);
+      
       const { data: { api_key }, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
       
       if (keyError || !api_key) {
@@ -45,6 +47,7 @@ export const SessionDetails = () => {
       }
 
       const data = await response.json();
+      console.log("Received conversation data:", data);
       return data;
     } catch (error) {
       console.error("Error fetching conversation data:", error);
@@ -55,6 +58,9 @@ export const SessionDetails = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
+        console.log("Fetching session data for ID:", id);
+
         const { data, error } = await supabase
           .from("sessions")
           .select("*")
@@ -62,15 +68,25 @@ export const SessionDetails = () => {
           .single();
 
         if (error) {
+          console.error("Error fetching session:", error);
           toast.error("Failed to load session details");
           return;
         }
 
+        console.log("Session data:", data);
         setSession(data);
 
         if (data.conversation_id) {
-          const conversationData = await fetchConversationData(data.conversation_id);
-          setConversationData(conversationData);
+          try {
+            const conversationData = await fetchConversationData(data.conversation_id);
+            console.log("Setting conversation data:", conversationData);
+            setConversationData(conversationData);
+          } catch (error) {
+            console.error("Error fetching conversation:", error);
+            toast.error("Failed to load conversation transcript");
+          }
+        } else {
+          console.log("No conversation_id found in session data");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -129,12 +145,20 @@ export const SessionDetails = () => {
                   <span className="font-medium">Transcript</span>
                 </div>
                 <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                  {conversationData?.transcript?.map((entry, index) => (
-                    <div key={index} className="border-b border-border pb-4 last:border-0">
-                      <p className="font-medium mb-1">{entry.role === "assistant" ? "AI" : "You"}</p>
-                      <p className="text-muted-foreground">{entry.content}</p>
-                    </div>
-                  ))}
+                  {!session.conversation_id ? (
+                    <p className="text-muted-foreground">No transcript available for this session.</p>
+                  ) : loading ? (
+                    <p className="text-muted-foreground">Loading transcript...</p>
+                  ) : conversationData?.transcript ? (
+                    conversationData.transcript.map((entry, index) => (
+                      <div key={index} className="border-b border-border pb-4 last:border-0">
+                        <p className="font-medium mb-1">{entry.role === "assistant" ? "AI" : "You"}</p>
+                        <p className="text-muted-foreground">{entry.content}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground">Failed to load transcript.</p>
+                  )}
                 </div>
               </CardContent>
             </Card>
