@@ -37,11 +37,11 @@ export const LoginForm = ({
         console.error("Login error:", signInError);
         
         if (signInError.message.includes("Invalid login credentials")) {
-          setError("Unable to find a user with that email. Please try again.");
+          setError("Incorrect email or password. Please try again.");
         } else if (signInError.message.includes("Email not confirmed")) {
           setError("Please check your email and confirm your account before logging in.");
         } else {
-          setError(signInError.message);
+          setError("An error occurred while trying to log in. Please try again.");
         }
         return;
       }
@@ -52,7 +52,7 @@ export const LoginForm = ({
       }
     } catch (error: any) {
       console.error("Login error:", error);
-      setError(error.message || "An error occurred during login");
+      setError("An unexpected error occurred. Please try again later.");
     } finally {
       setLoading(false);
     }
