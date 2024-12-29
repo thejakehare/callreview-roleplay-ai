@@ -5,7 +5,7 @@ import { Tables } from "@/integrations/supabase/types";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Clock, MessageSquare } from "lucide-react";
+import { ArrowLeft, Clock, MessageSquare, FileText } from "lucide-react";
 import { toast } from "sonner";
 
 interface TranscriptEntry {
@@ -163,6 +163,20 @@ export const SessionDetails = () => {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-1">
+            {conversationData?.analysis?.transcript_summary && (
+              <Card className="bg-accent/50 border-0">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <FileText className="h-4 w-4 text-primary" />
+                    <span className="font-medium">Summary</span>
+                  </div>
+                  <p className="text-muted-foreground">
+                    {conversationData.analysis.transcript_summary}
+                  </p>
+                </CardContent>
+              </Card>
+            )}
+            
             <Card className="bg-accent/50 border-0">
               <CardContent className="pt-6">
                 <div className="flex items-center gap-2">
