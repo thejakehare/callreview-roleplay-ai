@@ -11,12 +11,16 @@ serve(async (req) => {
   }
 
   try {
+    console.log("Retrieving ELEVENLABS_API_KEY from environment...");
     const api_key = Deno.env.get('ELEVENLABS_API_KEY')
     
     if (!api_key) {
+      console.error("ELEVENLABS_API_KEY not found in environment variables");
       throw new Error('ELEVENLABS_API_KEY not found in environment variables')
     }
 
+    console.log("Successfully retrieved ELEVENLABS_API_KEY");
+    
     return new Response(
       JSON.stringify({ api_key }),
       { 
@@ -28,6 +32,7 @@ serve(async (req) => {
       },
     )
   } catch (error) {
+    console.error("Error in get-elevenlabs-key function:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

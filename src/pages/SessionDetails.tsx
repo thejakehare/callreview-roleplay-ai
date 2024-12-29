@@ -33,33 +33,48 @@ export const SessionDetails = () => {
 
   const fetchConversationData = async (conversationId: string) => {
     try {
-      console.log("Fetching conversation data for ID:", conversationId);
+      console.log("Starting fetchConversationData for ID:", conversationId);
       
-      const { data: { api_key }, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
+      console.log("Attempting to retrieve ElevenLabs API key...");
+      const { data: keyData, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
       
-      if (keyError || !api_key) {
-        console.error("Failed to get API key:", keyError);
-        throw new Error('Failed to get API key');
+      if (keyError) {
+        console.error("Error retrieving API key:", keyError);
+        throw new Error('Failed to get API key: ' + keyError.message);
       }
 
+      if (!keyData?.api_key) {
+        console.error("No API key found in response:", keyData);
+        throw new Error('No API key found in response');
+      }
+
+      console.log("Successfully retrieved API key");
+
+      console.log("Making request to ElevenLabs API...");
       const response = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
         {
           headers: {
-            "xi-api-key": api_key,
+            "xi-api-key": keyData.api_key,
           },
         }
       );
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorText = await response.text();
+        console.error("ElevenLabs API error:", {
+          status: response.status,
+          statusText: response.statusText,
+          errorText
+        });
+        throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
       }
 
       const data = await response.json();
-      console.log("Received conversation data:", data);
+      console.log("Successfully received conversation data:", data);
       return data;
     } catch (error) {
-      console.error("Error fetching conversation data:", error);
+      console.error("Error in fetchConversationData:", error);
       throw error;
     }
   };
@@ -82,10 +97,11 @@ export const SessionDetails = () => {
           return;
         }
 
-        console.log("Session data:", data);
+        console.log("Session data retrieved:", data);
         setSession(data);
 
         if (data.conversation_id) {
+          console.log("Found conversation_id:", data.conversation_id);
           try {
             const conversationData = await fetchConversationData(data.conversation_id);
             console.log("Setting conversation data:", conversationData);
