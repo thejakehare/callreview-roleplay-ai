@@ -63,7 +63,7 @@ const Home = () => {
             Perfect for interviews, customer service, and professional development.
           </p>
           
-          {/* CTA Buttons */}
+          {/* CTA Button */}
           <div className="flex gap-4 justify-center pt-4">
             <Button
               size="lg"
@@ -71,14 +71,6 @@ const Home = () => {
               className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
             >
               Get Started Free <ChevronRight className="w-4 h-4" />
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              onClick={() => navigate("/auth")}
-              className="gap-2"
-            >
-              View Demo <Play className="w-4 h-4" />
             </Button>
           </div>
         </div>
