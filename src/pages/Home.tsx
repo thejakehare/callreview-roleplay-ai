@@ -66,7 +66,7 @@ const Home = () => {
         <img
           src={`${supabase.storage.from('logos').getPublicUrl('call-review-ai-animated.gif').data.publicUrl}`}
           alt="Call Review AI Animation"
-          className="w-64 h-64 mb-8 object-contain"
+          className="w-40 h-40 mb-8 object-contain"
         />
 
         {/* Badge */}
