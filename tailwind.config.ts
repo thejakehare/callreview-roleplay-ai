@@ -48,10 +48,6 @@ export default {
           DEFAULT: "#FFFFFF",
           foreground: "#1A202C",
         },
-        gradient: {
-          start: "#ffb7cc",
-          end: "#935fc6",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
