@@ -75,7 +75,27 @@ export const SessionDetails = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      return await response.json();
+      const data = await response.json();
+      
+      // Save the fetched data to the database
+      const { error: updateError } = await supabase
+        .from("sessions")
+        .update({
+          duration: data.metadata?.call_duration_secs || null,
+          summary: data.analysis?.transcript_summary || null,
+          transcript: JSON.stringify(data.transcript) || null,
+          metadata: data.metadata || null,
+          analysis: data.analysis || null,
+          topic_value: data.analysis?.data_collection_results?.Topic?.value || null,
+        })
+        .eq("id", id);
+
+      if (updateError) {
+        console.error("Error updating session with conversation data:", updateError);
+        toast.error("Failed to save conversation data");
+      }
+
+      return data;
     } catch (error) {
       console.error("Error in fetchConversationData:", error);
       toast.error("Failed to load conversation data");
@@ -101,11 +121,29 @@ export const SessionDetails = () => {
 
         setSession(data);
 
-        if (data.conversation_id) {
+        if (data.conversation_id && (!data.transcript || !data.summary)) {
+          console.log("Fetching conversation data from ElevenLabs...");
           const conversationData = await fetchConversationData(data.conversation_id);
           if (conversationData) {
             setConversationData(conversationData);
+            // Refresh session data to get the updated values
+            const { data: updatedSession, error: refreshError } = await supabase
+              .from("sessions")
+              .select("*")
+              .eq("id", id)
+              .single();
+              
+            if (!refreshError) {
+              setSession(updatedSession);
+            }
           }
+        } else if (data.transcript) {
+          // If we already have the transcript, parse it
+          setConversationData({
+            transcript: JSON.parse(data.transcript),
+            metadata: data.metadata,
+            analysis: data.analysis
+          });
         }
       } catch (error) {
         console.error("Error:", error);
