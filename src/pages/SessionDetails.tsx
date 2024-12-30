@@ -2,20 +2,20 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { Tables } from "@/integrations/supabase/types";
-import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Clock, MessageSquare, FileText } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-
-interface TranscriptEntry {
-  role: string;
-  message: string;
-  time_in_call_secs: number;
-}
+import { SessionHeader } from "@/components/session-details/SessionHeader";
+import { SessionSummary } from "@/components/session-details/SessionSummary";
+import { SessionTranscript } from "@/components/session-details/SessionTranscript";
 
 interface ConversationData {
-  transcript: TranscriptEntry[];
+  transcript: {
+    role: string;
+    message: string;
+    time_in_call_secs: number;
+  }[];
   metadata?: {
     call_duration_secs: number;
   };
@@ -38,9 +38,6 @@ export const SessionDetails = () => {
 
   const fetchConversationData = async (conversationId: string) => {
     try {
-      console.log("Starting fetchConversationData for ID:", conversationId);
-      
-      console.log("Attempting to retrieve ElevenLabs API key...");
       const { data: keyData, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
       
       if (keyError) {
@@ -53,9 +50,6 @@ export const SessionDetails = () => {
         throw new Error('No API key found in response');
       }
 
-      console.log("Successfully retrieved API key");
-
-      console.log("Making request to ElevenLabs API...");
       const response = await fetch(
         `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
         {
@@ -75,9 +69,7 @@ export const SessionDetails = () => {
         throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
       }
 
-      const data = await response.json();
-      console.log("Successfully received conversation data:", data);
-      return data;
+      return await response.json();
     } catch (error) {
       console.error("Error in fetchConversationData:", error);
       throw error;
@@ -88,8 +80,6 @@ export const SessionDetails = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        console.log("Fetching session data for ID:", id);
-
         const { data, error } = await supabase
           .from("sessions")
           .select("*")
@@ -102,21 +92,16 @@ export const SessionDetails = () => {
           return;
         }
 
-        console.log("Session data retrieved:", data);
         setSession(data);
 
         if (data.conversation_id) {
-          console.log("Found conversation_id:", data.conversation_id);
           try {
             const conversationData = await fetchConversationData(data.conversation_id);
-            console.log("Setting conversation data:", conversationData);
             setConversationData(conversationData);
           } catch (error) {
             console.error("Error fetching conversation:", error);
             toast.error("Failed to load conversation transcript");
           }
-        } else {
-          console.log("No conversation_id found in session data");
         }
       } catch (error) {
         console.error("Error:", error);
@@ -158,56 +143,18 @@ export const SessionDetails = () => {
       </Button>
 
       <Card className="bg-card border-0">
-        <CardHeader>
-          <CardTitle className="text-2xl text-primary">
-            {sessionTitle}
-          </CardTitle>
-          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-            <span>{format(new Date(session.created_at), "PPp")}</span>
-            <Clock className="h-4 w-4 text-primary" />
-            <span>{session.duration ? `${session.duration} minutes` : "N/A"}</span>
-          </div>
-        </CardHeader>
+        <SessionHeader session={session} title={sessionTitle} />
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-1">
             {conversationData?.analysis?.transcript_summary && (
-              <Card className="bg-accent/50 border-0">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <FileText className="h-4 w-4 text-primary" />
-                    <span className="font-medium">Summary</span>
-                  </div>
-                  <p className="text-muted-foreground">
-                    {conversationData.analysis.transcript_summary}
-                  </p>
-                </CardContent>
-              </Card>
+              <SessionSummary summary={conversationData.analysis.transcript_summary} />
             )}
             
-            <Card className="bg-accent/50 border-0">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-2">
-                  <MessageSquare className="h-4 w-4 text-primary" />
-                  <span className="font-medium">Transcript</span>
-                </div>
-                <div className="mt-4 space-y-4 max-h-96 overflow-y-auto">
-                  {!session.conversation_id ? (
-                    <p className="text-muted-foreground">No transcript available for this session.</p>
-                  ) : loading ? (
-                    <p className="text-muted-foreground">Loading transcript...</p>
-                  ) : conversationData?.transcript ? (
-                    conversationData.transcript.map((entry, index) => (
-                      <div key={index} className="border-b border-border pb-4 last:border-0">
-                        <p className="font-medium mb-1">{entry.role === "agent" ? "AI" : "You"}</p>
-                        <p className="text-muted-foreground">{entry.message}</p>
-                      </div>
-                    ))
-                  ) : (
-                    <p className="text-muted-foreground">Failed to load transcript.</p>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
+            <SessionTranscript
+              conversationId={session.conversation_id}
+              loading={loading}
+              transcript={conversationData?.transcript}
+            />
           </div>
         </CardContent>
       </Card>
