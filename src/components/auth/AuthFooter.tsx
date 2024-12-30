@@ -8,7 +8,7 @@ export const AuthFooter = () => {
         rel="noopener noreferrer"
       >
         <img 
-          src="https://wivbfxjqydkozyvlabil.supabase.co/storage/v1/object/public/logos/crai-logo-animated-white.gif" 
+          src="https://wivbfxjqydkozyvlabil.supabase.co/storage/v1/object/public/logos/crai-logo-animated-dark.gif" 
           alt="CallReviewAI Logo" 
           className="h-6" 
         />
