@@ -5,16 +5,14 @@ import { Tables } from "@/integrations/supabase/types";
 
 interface SessionHeaderProps {
   session: Tables<"sessions">;
+  title: string;
 }
 
-export const SessionHeader = ({ session }: SessionHeaderProps) => {
-  // Extract topic value from the session data
-  const topicValue = session.analysis?.data_collection_results?.Topic?.value || "Session Details";
-
+export const SessionHeader = ({ session, title }: SessionHeaderProps) => {
   return (
     <CardHeader>
       <CardTitle className="text-2xl text-primary">
-        {topicValue}
+        {title}
       </CardTitle>
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>{format(new Date(session.created_at), "PPp")}</span>
