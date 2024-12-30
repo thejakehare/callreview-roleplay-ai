@@ -7,7 +7,11 @@ export const AuthFooter = () => {
         target="_blank" 
         rel="noopener noreferrer"
       >
-        <img src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" alt="Logo" className="h-6" />
+        <img 
+          src="https://wivbfxjqydkozyvlabil.supabase.co/storage/v1/object/public/logos/crai-logo-animated-white.gif" 
+          alt="CallReviewAI Logo" 
+          className="h-6" 
+        />
       </a>
     </footer>
   );
