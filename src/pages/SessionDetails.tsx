@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { SessionHeader } from "@/components/session-details/SessionHeader";
 import { SessionSummary } from "@/components/session-details/SessionSummary";
 import { SessionTranscript } from "@/components/session-details/SessionTranscript";
+import { fetchElevenLabsConversation } from "@/utils/elevenlabs";
 
 interface ConversationData {
   transcript: {
@@ -36,73 +37,6 @@ export const SessionDetails = () => {
   const [conversationData, setConversationData] = useState<ConversationData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchConversationData = async (conversationId: string) => {
-    try {
-      const { data: keyData, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
-      
-      if (keyError) {
-        console.error("Error retrieving API key:", keyError);
-        throw new Error('Failed to get API key: ' + keyError.message);
-      }
-
-      if (!keyData?.api_key) {
-        console.error("No API key found in response:", keyData);
-        throw new Error('No API key found in response');
-      }
-
-      const response = await fetch(
-        `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
-        {
-          headers: {
-            "xi-api-key": keyData.api_key,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("ElevenLabs API error:", {
-          status: response.status,
-          statusText: response.statusText,
-          errorText
-        });
-        
-        if (response.status === 404) {
-          toast.error("Conversation data not found or inaccessible");
-          return null;
-        }
-        
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      
-      // Save the fetched data to the database
-      const { error: updateError } = await supabase
-        .from("sessions")
-        .update({
-          duration: data.metadata?.call_duration_secs || null,
-          summary: data.analysis?.transcript_summary || null,
-          transcript: JSON.stringify(data.transcript) || null,
-          metadata: data.metadata || null,
-          analysis: data.analysis || null,
-          topic_value: data.analysis?.data_collection_results?.Topic?.value || null,
-        })
-        .eq("id", id);
-
-      if (updateError) {
-        console.error("Error updating session with conversation data:", updateError);
-        toast.error("Failed to save conversation data");
-      }
-
-      return data;
-    } catch (error) {
-      console.error("Error in fetchConversationData:", error);
-      toast.error("Failed to load conversation data");
-      return null;
-    }
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -123,26 +57,49 @@ export const SessionDetails = () => {
 
         if (data.conversation_id && (!data.transcript || !data.summary)) {
           console.log("Fetching conversation data from ElevenLabs...");
-          const conversationData = await fetchConversationData(data.conversation_id);
+          const conversationData = await fetchElevenLabsConversation(data.conversation_id);
+          
           if (conversationData) {
             setConversationData(conversationData);
-            // Refresh session data to get the updated values
-            const { data: updatedSession, error: refreshError } = await supabase
+            
+            // Update session with the new data
+            const { error: updateError } = await supabase
               .from("sessions")
-              .select("*")
-              .eq("id", id)
-              .single();
-              
-            if (!refreshError) {
-              setSession(updatedSession);
+              .update({
+                duration: conversationData.metadata?.call_duration_secs || null,
+                summary: conversationData.analysis?.transcript_summary || null,
+                transcript: JSON.stringify(conversationData.transcript) || null,
+                topic_value: conversationData.analysis?.data_collection_results?.Topic?.value || null,
+              })
+              .eq("id", id);
+
+            if (updateError) {
+              console.error("Error updating session:", updateError);
+              toast.error("Failed to save conversation data");
+            } else {
+              // Refresh session data
+              const { data: updatedSession, error: refreshError } = await supabase
+                .from("sessions")
+                .select("*")
+                .eq("id", id)
+                .single();
+                
+              if (!refreshError) {
+                setSession(updatedSession);
+              }
             }
           }
         } else if (data.transcript) {
           // If we already have the transcript, parse it
           setConversationData({
             transcript: JSON.parse(data.transcript),
-            metadata: data.metadata,
-            analysis: data.analysis
+            metadata: { call_duration_secs: data.duration || 0 },
+            analysis: {
+              transcript_summary: data.summary || '',
+              data_collection_results: {
+                Topic: { value: data.topic_value || '' }
+              }
+            }
           });
         }
       } catch (error) {
