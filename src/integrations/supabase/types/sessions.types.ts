@@ -56,8 +56,8 @@ export interface SessionsTable {
     topic_schema: Json | null;
     topic_rationale: string | null;
     call_successful: string | null;
-    metadata?: SessionMetadata;
-    analysis?: SessionAnalysis;
+    metadata: SessionMetadata | null;
+    analysis: SessionAnalysis | null;
   };
   Insert: {
     id?: string;
@@ -82,8 +82,8 @@ export interface SessionsTable {
     topic_schema?: Json | null;
     topic_rationale?: string | null;
     call_successful?: string | null;
-    metadata?: SessionMetadata;
-    analysis?: SessionAnalysis;
+    metadata?: SessionMetadata | null;
+    analysis?: SessionAnalysis | null;
   };
   Update: {
     id?: string;
@@ -108,8 +108,8 @@ export interface SessionsTable {
     topic_schema?: Json | null;
     topic_rationale?: string | null;
     call_successful?: string | null;
-    metadata?: SessionMetadata;
-    analysis?: SessionAnalysis;
+    metadata?: SessionMetadata | null;
+    analysis?: SessionAnalysis | null;
   };
   Relationships: [];
 }

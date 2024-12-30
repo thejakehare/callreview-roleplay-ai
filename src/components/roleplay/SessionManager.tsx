@@ -31,6 +31,7 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
       if (!response.ok) {
         if (response.status === 404) {
           console.log("Conversation not found or inaccessible");
+          toast.error("Conversation data is no longer available");
           return null;
         }
         console.error("ElevenLabs API error:", response.status, response.statusText);
@@ -42,7 +43,12 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
       return data;
     } catch (error) {
       console.error("Error fetching conversation data:", error);
-      throw error;
+      if (error instanceof Error) {
+        toast.error(`Failed to load conversation data: ${error.message}`);
+      } else {
+        toast.error("Failed to load conversation data");
+      }
+      return null;
     }
   };
 
@@ -50,7 +56,6 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
     try {
       if (!conversationData) {
         console.log("No conversation data to save");
-        toast.error("No conversation data available");
         return;
       }
 
