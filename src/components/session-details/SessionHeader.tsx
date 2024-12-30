@@ -17,7 +17,11 @@ export const SessionHeader = ({ session, title }: SessionHeaderProps) => {
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <span>{format(new Date(session.created_at), "PPp")}</span>
         <Clock className="h-4 w-4 text-primary" />
-        <span>{session.duration ? `${session.duration} minutes` : "N/A"}</span>
+        <span>
+          {session.conversation_id && session.metadata?.call_duration_secs
+            ? `${Math.floor(session.metadata.call_duration_secs / 60)} minutes`
+            : "N/A"}
+        </span>
       </div>
     </CardHeader>
   );
