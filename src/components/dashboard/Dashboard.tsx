@@ -37,7 +37,7 @@ export const Dashboard = () => {
           rel="noopener noreferrer"
         >
           <img 
-            src="/lovable-uploads/3b07f009-d5ac-4afa-a753-e8636bd1c59f.png" 
+            src="https://wivbfxjqydkozyvlabil.supabase.co/storage/v1/object/public/logos/crai-logo-animated-dark.gif" 
             alt="CallReviewAI Logo" 
             className="h-8"
           />
