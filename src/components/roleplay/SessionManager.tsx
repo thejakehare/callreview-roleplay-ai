@@ -29,6 +29,10 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
       );
 
       if (!response.ok) {
+        if (response.status === 404) {
+          console.log("Conversation not found or inaccessible");
+          return null;
+        }
         console.error("ElevenLabs API error:", response.status, response.statusText);
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -44,13 +48,18 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
 
   const saveSessionData = async (conversationData: any) => {
     try {
+      if (!conversationData) {
+        console.log("No conversation data to save");
+        toast.error("No conversation data available");
+        return;
+      }
+
       console.log("Raw conversation data:", conversationData);
       if (!userId || !sessionId) {
         console.error("No user ID or session ID found");
         return;
       }
 
-      // Extract duration from metadata.call_duration_secs
       const duration = conversationData.metadata?.call_duration_secs;
       const summary = conversationData.analysis?.transcript_summary || "";
       const feedback = JSON.stringify(conversationData.feedback || {});
@@ -65,6 +74,8 @@ export const useSessionManager = ({ userId, conversationId, sessionId }: Session
           summary,
           feedback,
           transcript,
+          metadata: conversationData.metadata || null,
+          analysis: conversationData.analysis || null,
         })
         .eq('id', sessionId);
 

@@ -8,7 +8,8 @@ interface SessionHeaderProps {
 }
 
 export const SessionHeader = ({ session }: SessionHeaderProps) => {
-  const title = session.analysis?.data_collection_results?.Topic?.value || "Session Details";
+  const title = session.topic_value || "Session Details";
+  const duration = session.duration || session.metadata?.call_duration_secs;
   
   return (
     <CardHeader>
@@ -19,8 +20,8 @@ export const SessionHeader = ({ session }: SessionHeaderProps) => {
         <span>{format(new Date(session.created_at), "PPp")}</span>
         <Clock className="h-4 w-4 text-primary" />
         <span>
-          {session.metadata?.call_duration_secs
-            ? `${Math.floor(session.metadata.call_duration_secs / 60)} minutes`
+          {duration
+            ? `${Math.floor(duration / 60)} minutes`
             : "N/A"}
         </span>
       </div>
