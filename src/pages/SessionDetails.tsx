@@ -21,6 +21,11 @@ interface ConversationData {
   };
   analysis?: {
     transcript_summary: string;
+    data_collection_results?: {
+      Topic?: {
+        value: string;
+      };
+    };
   };
 }
 
@@ -140,6 +145,8 @@ export const SessionDetails = () => {
     );
   }
 
+  const sessionTitle = conversationData?.analysis?.data_collection_results?.Topic?.value || "Session Details";
+
   return (
     <div className="container mx-auto py-12 px-4">
       <Button
@@ -153,7 +160,7 @@ export const SessionDetails = () => {
       <Card className="bg-card border-0">
         <CardHeader>
           <CardTitle className="text-2xl text-primary">
-            Session Details
+            {sessionTitle}
           </CardTitle>
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <span>{format(new Date(session.created_at), "PPp")}</span>
