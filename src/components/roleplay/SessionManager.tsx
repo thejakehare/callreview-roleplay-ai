@@ -7,8 +7,14 @@ interface SessionManagerProps {
   sessionId: string;
 }
 
+interface ConversationData {
+  transcript?: any;
+  metadata?: any;
+  analysis?: any;
+}
+
 export const useSessionManager = ({ userId, sessionId }: SessionManagerProps) => {
-  const saveSessionData = async () => {
+  const saveSessionData = async (conversationData: ConversationData) => {
     try {
       if (!userId || !sessionId) {
         console.error("No user ID or session ID found");
@@ -18,7 +24,10 @@ export const useSessionManager = ({ userId, sessionId }: SessionManagerProps) =>
       const { error } = await supabase
         .from("sessions")
         .update({
-          status: 'completed'
+          status: 'completed',
+          transcript: JSON.stringify(conversationData.transcript),
+          metadata: conversationData.metadata,
+          analysis: conversationData.analysis,
         })
         .eq('id', sessionId);
 
@@ -27,7 +36,7 @@ export const useSessionManager = ({ userId, sessionId }: SessionManagerProps) =>
         throw error;
       }
 
-      console.log("Session marked as completed");
+      console.log("Session data saved successfully");
       toast.success("Session completed successfully");
     } catch (error) {
       console.error("Error saving session:", error);
@@ -35,7 +44,44 @@ export const useSessionManager = ({ userId, sessionId }: SessionManagerProps) =>
     }
   };
 
+  const fetchConversationData = async (conversationId: string) => {
+    try {
+      const { data: keyData, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
+      
+      if (keyError) {
+        console.error("Error retrieving API key:", keyError);
+        throw new Error('Failed to get API key');
+      }
+
+      if (!keyData?.api_key) {
+        console.error("No API key found in response");
+        throw new Error('No API key found in response');
+      }
+
+      const response = await fetch(
+        `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
+        {
+          headers: {
+            "xi-api-key": keyData.api_key,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Error fetching conversation data:", error);
+      toast.error("Failed to fetch conversation data");
+      throw error;
+    }
+  };
+
   return {
     saveSessionData,
+    fetchConversationData,
   };
 };
