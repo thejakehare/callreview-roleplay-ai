@@ -5,10 +5,11 @@ import { Tables } from "@/integrations/supabase/types";
 
 interface SessionHeaderProps {
   session: Tables<"sessions">;
-  title: string;
 }
 
-export const SessionHeader = ({ session, title }: SessionHeaderProps) => {
+export const SessionHeader = ({ session }: SessionHeaderProps) => {
+  const title = session.analysis?.data_collection_results?.Topic?.value || "Session Details";
+  
   return (
     <CardHeader>
       <CardTitle className="text-2xl text-primary">
@@ -18,7 +19,7 @@ export const SessionHeader = ({ session, title }: SessionHeaderProps) => {
         <span>{format(new Date(session.created_at), "PPp")}</span>
         <Clock className="h-4 w-4 text-primary" />
         <span>
-          {session.conversation_id && session.metadata?.call_duration_secs
+          {session.metadata?.call_duration_secs
             ? `${Math.floor(session.metadata.call_duration_secs / 60)} minutes`
             : "N/A"}
         </span>

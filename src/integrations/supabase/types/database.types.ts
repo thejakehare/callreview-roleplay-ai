@@ -79,7 +79,34 @@ export interface Database {
           transcript: string | null
           user_id: string
           metadata: {
+            start_time_unix_secs?: number
             call_duration_secs?: number
+            cost?: number
+            feedback?: {
+              overall_score?: number | null
+              likes?: number
+              dislikes?: number
+            }
+            authorization_method?: string
+            charging?: {
+              dev_discount?: boolean
+            }
+          } | null
+          analysis: {
+            evaluation_criteria_results?: Record<string, any>
+            data_collection_results?: {
+              Topic?: {
+                data_collection_id?: string
+                value?: string
+                json_schema?: {
+                  type?: string
+                  description?: string
+                }
+                rationale?: string
+              }
+            }
+            call_successful?: string
+            transcript_summary?: string
           } | null
         }
         Insert: {
@@ -92,7 +119,34 @@ export interface Database {
           transcript?: string | null
           user_id: string
           metadata?: {
+            start_time_unix_secs?: number
             call_duration_secs?: number
+            cost?: number
+            feedback?: {
+              overall_score?: number | null
+              likes?: number
+              dislikes?: number
+            }
+            authorization_method?: string
+            charging?: {
+              dev_discount?: boolean
+            }
+          } | null
+          analysis?: {
+            evaluation_criteria_results?: Record<string, any>
+            data_collection_results?: {
+              Topic?: {
+                data_collection_id?: string
+                value?: string
+                json_schema?: {
+                  type?: string
+                  description?: string
+                }
+                rationale?: string
+              }
+            }
+            call_successful?: string
+            transcript_summary?: string
           } | null
         }
         Update: {
@@ -105,7 +159,34 @@ export interface Database {
           transcript?: string | null
           user_id?: string
           metadata?: {
+            start_time_unix_secs?: number
             call_duration_secs?: number
+            cost?: number
+            feedback?: {
+              overall_score?: number | null
+              likes?: number
+              dislikes?: number
+            }
+            authorization_method?: string
+            charging?: {
+              dev_discount?: boolean
+            }
+          } | null
+          analysis?: {
+            evaluation_criteria_results?: Record<string, any>
+            data_collection_results?: {
+              Topic?: {
+                data_collection_id?: string
+                value?: string
+                json_schema?: {
+                  type?: string
+                  description?: string
+                }
+                rationale?: string
+              }
+            }
+            call_successful?: string
+            transcript_summary?: string
           } | null
         }
         Relationships: []

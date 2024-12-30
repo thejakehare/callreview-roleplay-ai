@@ -66,13 +66,20 @@ export const SessionDetails = () => {
           statusText: response.statusText,
           errorText
         });
-        throw new Error(`HTTP error! status: ${response.status}, details: ${errorText}`);
+        
+        if (response.status === 404) {
+          toast.error("Conversation data not found or inaccessible");
+          return null;
+        }
+        
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       return await response.json();
     } catch (error) {
       console.error("Error in fetchConversationData:", error);
-      throw error;
+      toast.error("Failed to load conversation data");
+      return null;
     }
   };
 
@@ -95,12 +102,9 @@ export const SessionDetails = () => {
         setSession(data);
 
         if (data.conversation_id) {
-          try {
-            const conversationData = await fetchConversationData(data.conversation_id);
+          const conversationData = await fetchConversationData(data.conversation_id);
+          if (conversationData) {
             setConversationData(conversationData);
-          } catch (error) {
-            console.error("Error fetching conversation:", error);
-            toast.error("Failed to load conversation transcript");
           }
         }
       } catch (error) {
@@ -130,8 +134,6 @@ export const SessionDetails = () => {
     );
   }
 
-  const sessionTitle = conversationData?.analysis?.data_collection_results?.Topic?.value || "Session Details";
-
   return (
     <div className="container mx-auto py-12 px-4">
       <Button
@@ -143,7 +145,7 @@ export const SessionDetails = () => {
       </Button>
 
       <Card className="bg-card border-0">
-        <SessionHeader session={session} title={sessionTitle} />
+        <SessionHeader session={session} />
         <CardContent className="space-y-6">
           <div className="grid gap-6 md:grid-cols-1">
             {conversationData?.analysis?.transcript_summary && (
