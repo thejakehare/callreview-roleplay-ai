@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { FavoriteButton } from "@/components/favorites/FavoriteButton";
+import { Star, Clock, DollarSign } from "lucide-react";
 
 interface SessionHistoryTableProps {
   sessions: (Tables<"sessions"> & { is_favorite?: boolean })[];
@@ -24,7 +25,9 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
         <TableHeader>
           <TableRow className="border-b border-accent hover:bg-accent/50">
             <TableHead className="text-primary">Date</TableHead>
+            <TableHead className="text-primary">Topic</TableHead>
             <TableHead className="text-primary">Duration</TableHead>
+            <TableHead className="text-primary">Cost</TableHead>
             <TableHead className="text-primary w-[50px]"></TableHead>
           </TableRow>
         </TableHeader>
@@ -39,7 +42,15 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
                 {format(new Date(session.created_at), "PPp")}
               </TableCell>
               <TableCell className="text-foreground">
+                {session.topic_value || "N/A"}
+              </TableCell>
+              <TableCell className="text-foreground flex items-center gap-2">
+                <Clock className="h-4 w-4 text-primary" />
                 {session.duration ? `${session.duration} minutes` : "N/A"}
+              </TableCell>
+              <TableCell className="text-foreground flex items-center gap-2">
+                <DollarSign className="h-4 w-4 text-primary" />
+                {session.cost ? `$${(session.cost / 100).toFixed(2)}` : "N/A"}
               </TableCell>
               <TableCell className="text-foreground">
                 <FavoriteButton 
@@ -51,7 +62,7 @@ export const SessionHistoryTable = ({ sessions }: SessionHistoryTableProps) => {
           ))}
           {sessions.length === 0 && (
             <TableRow>
-              <TableCell colSpan={3} className="text-center text-muted-foreground">
+              <TableCell colSpan={5} className="text-center text-muted-foreground">
                 No sessions found
               </TableCell>
             </TableRow>

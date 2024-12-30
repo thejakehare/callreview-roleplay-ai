@@ -70,32 +70,74 @@ export type Database = {
       }
       sessions: {
         Row: {
+          agent_id: string | null
+          authorization_method: string | null
+          call_successful: string | null
           conversation_id: string | null
+          cost: number | null
           created_at: string
+          dev_discount: boolean | null
           duration: number | null
           feedback: string | null
+          feedback_dislikes: number | null
+          feedback_likes: number | null
+          feedback_score: number | null
           id: string
+          start_time_unix_secs: number | null
+          status: string | null
           summary: string | null
+          topic_collection_id: string | null
+          topic_rationale: string | null
+          topic_schema: Json | null
+          topic_value: string | null
           transcript: string | null
           user_id: string
         }
         Insert: {
+          agent_id?: string | null
+          authorization_method?: string | null
+          call_successful?: string | null
           conversation_id?: string | null
+          cost?: number | null
           created_at?: string
+          dev_discount?: boolean | null
           duration?: number | null
           feedback?: string | null
+          feedback_dislikes?: number | null
+          feedback_likes?: number | null
+          feedback_score?: number | null
           id?: string
+          start_time_unix_secs?: number | null
+          status?: string | null
           summary?: string | null
+          topic_collection_id?: string | null
+          topic_rationale?: string | null
+          topic_schema?: Json | null
+          topic_value?: string | null
           transcript?: string | null
           user_id: string
         }
         Update: {
+          agent_id?: string | null
+          authorization_method?: string | null
+          call_successful?: string | null
           conversation_id?: string | null
+          cost?: number | null
           created_at?: string
+          dev_discount?: boolean | null
           duration?: number | null
           feedback?: string | null
+          feedback_dislikes?: number | null
+          feedback_likes?: number | null
+          feedback_score?: number | null
           id?: string
+          start_time_unix_secs?: number | null
+          status?: string | null
           summary?: string | null
+          topic_collection_id?: string | null
+          topic_rationale?: string | null
+          topic_schema?: Json | null
+          topic_value?: string | null
           transcript?: string | null
           user_id?: string
         }
