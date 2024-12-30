@@ -31,7 +31,7 @@ export const ScrollingPrompts = () => {
               : "-translate-y-8 opacity-0"
           }`}
         >
-          <p className="text-white text-xl font-medium">{prompt}</p>
+          <p className="text-black text-xl font-medium">{prompt}</p>
         </div>
       ))}
     </div>
