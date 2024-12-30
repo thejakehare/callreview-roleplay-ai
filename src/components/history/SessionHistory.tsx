@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { SessionHistoryLoading } from "./SessionHistoryLoading";
 import { SessionHistoryTable } from "./SessionHistoryTable";
 import { useSessionHistory } from "@/hooks/useSessionHistory";
@@ -37,8 +37,7 @@ export const SessionHistory = () => {
   return (
     <Card className="w-full bg-card border-0">
       <CardHeader>
-        <CardTitle className="text-2xl text-primary">Session History</CardTitle>
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-4">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex flex-col sm:flex-row gap-4">
             <div className="flex items-center space-x-4">
               <Popover open={isFromCalendarOpen} onOpenChange={setIsFromCalendarOpen}>
