@@ -22,6 +22,8 @@ interface ElevenLabsResponse {
 
 export const fetchElevenLabsConversation = async (conversationId: string) => {
   try {
+    console.log("Starting ElevenLabs conversation fetch for ID:", conversationId);
+    
     const { data: keyData, error: keyError } = await supabase.functions.invoke('get-elevenlabs-key');
     
     if (keyError) {
@@ -34,6 +36,8 @@ export const fetchElevenLabsConversation = async (conversationId: string) => {
       throw new Error('No API key found in response');
     }
 
+    console.log("Successfully retrieved API key, making request to ElevenLabs API...");
+
     const response = await fetch(
       `https://api.elevenlabs.io/v1/convai/conversations/${conversationId}`,
       {
@@ -43,7 +47,8 @@ export const fetchElevenLabsConversation = async (conversationId: string) => {
       }
     );
 
-    // Read the response body once and store it
+    console.log("ElevenLabs API response status:", response.status);
+    
     const responseData = await response.json();
     
     if (!response.ok) {
@@ -60,6 +65,12 @@ export const fetchElevenLabsConversation = async (conversationId: string) => {
       
       throw new Error(`HTTP error! status: ${response.status}`);
     }
+
+    console.log("Successfully fetched conversation data:", {
+      hasTranscript: !!responseData.transcript,
+      transcriptLength: responseData.transcript?.length,
+      hasSummary: !!responseData.analysis?.transcript_summary
+    });
 
     return responseData as ElevenLabsResponse;
   } catch (error) {
