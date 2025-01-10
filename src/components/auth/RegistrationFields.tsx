@@ -36,12 +36,12 @@ export const RegistrationFields = ({
               {role ? roleDisplayNames[role] : "Select your role"}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="bg-[#222222] border-0">
+          <SelectContent className="bg-background border-border">
             {Object.entries(roleDisplayNames).map(([value, label]) => (
               <SelectItem 
                 key={value} 
                 value={value} 
-                className="focus:bg-[#333333] cursor-pointer"
+                className="focus:bg-accent cursor-pointer"
               >
                 {label}
               </SelectItem>
